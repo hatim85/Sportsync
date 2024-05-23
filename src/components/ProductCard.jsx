@@ -20,7 +20,7 @@ function ProductCard() {
         }
         const data = await response.json();
         setProducts(data);
-        setLoading(false);
+        setLoading(false);  
       } catch (error) {
         console.error(error);
         setLoading(false);
