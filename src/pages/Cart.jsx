@@ -11,8 +11,10 @@ import AddressCard from '../components/AddressCard';
 function Cart() {
     const dispatch = useDispatch();
     const { cartItems, loading, error } = useSelector(state => state.cart);
+    console.log(cartItems)
     const { currentUser } = useSelector(state => state.user);
     const userId = currentUser._id;
+    console.log(currentUser)
 
     {/* Refresh the page in cart for see the reflecting changes sometimes it doesn't update the changes directly  */ }
 
@@ -61,8 +63,8 @@ function Cart() {
             toast.error('Failed to update quantity');
         }
     };
-
     const fetchCartItems = async (userId) => {
+        console.log(userId)
         dispatch(fetchCartItemsRequest());
         try {
             const response = await fetch(`${import.meta.env.VITE_PORT}/api/cart/getcart/${userId}`, {

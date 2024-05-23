@@ -29,6 +29,20 @@ const userSlice = createSlice({
             state.loading = false;
             state.error = action.payload;
         },
+        signUpStart: (state) => {
+            state.loading = true;
+            state.error = false
+        },
+        signUpSuccess: (state, action) => {
+            state.currentUser = action.payload;
+            localStorage.setItem('currentUser', JSON.stringify(action.payload))
+            state.loading = false;
+            state.error = null;
+        },
+        signUpFailure: (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+        },
         updateStart: (state) => {
             state.loading = true;
             state.error = null;
@@ -107,6 +121,9 @@ export const {
     getUserStart,
     getUserSuccess,
     getUserFailure,
+    signUpStart,
+    signUpFailure,
+    signUpSuccess
 } = userSlice.actions;
 
 export const fetchUsers = () => async (dispatch) => {
