@@ -51,7 +51,7 @@ function Header({ onSearch }) {
                                         <button className='border border-white rounded-full text-white px-2 py-2'>Dashboard</button>
                                     </Link>
                                 ) : (
-                                    <div className='flex flex-row gap-10'>
+                                    <div className='flex flex-row gap-10 md:w-fit w-full justify-end'>
                                         <Link to='/profile'><li><MdAccountCircle className='h-[7vw] w-auto md:h-[2vw] md:w-auto' /></li></Link>
                                         <Link to='/cart'>
                                             <li className='relative'>
