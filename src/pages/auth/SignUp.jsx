@@ -61,7 +61,7 @@ function SignUp() {
       setLoading(false);
       if (res.ok) {
         toast.success('Account created successfully');
-        navigate('/');
+        navigate('/signin');
       }
     }
     catch (error) {

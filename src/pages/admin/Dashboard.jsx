@@ -33,6 +33,7 @@ function Dashboard() {
           {tab === 'products' && <Product />}
           {tab === 'categories' && <Category />}
           {tab==='orders' && <Order/>}
+          {tab==='users' && <Users/>}
         </div>
       </div>
     </>

@@ -46,6 +46,8 @@ function DashSidebar() {
             <hr className='border-gray-400 w-full' />
             <li className='p-10'><Link to='/dashboard/?tab=categories'>Categories</Link></li>
             <hr className='border-gray-400 w-full' />
+            <li className='p-10'><Link to='/dashboard/?tab=users'>Users</Link></li>
+            <hr className='border-gray-400 w-full' />
             <li className='p-10'><Link to='/dashboard/?tab=orders'>Orders</Link></li>
             <hr className='border-gray-400 w-full' />
             <li className='p-10'><button onClick={handleSignout}>Signout</button></li>

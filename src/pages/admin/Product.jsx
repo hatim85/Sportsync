@@ -7,12 +7,17 @@ import { toast } from 'react-toastify';
 function Product() {
     const dispatch = useDispatch();
     const { products, loading, error } = useSelector(state => state.product);
+    // const { products } = useSelector(state => state.product);
     const [currentPage, setCurrentPage] = useState(1)
     const [totalProducts, setTotalProducts] = useState(0);
+    // console.log(products)
     const pageSize = 10
 
     useEffect(() => {
         fetchProducts(currentPage)
+        return ()=>{
+            dispatch(getProductsSuccess([]))
+        }
     }, [currentPage]);
 
     useEffect(() => {
@@ -36,11 +41,10 @@ function Product() {
                 <button className='bg-blue-500 rounded-lg text-white px-3 py-3' onClick={prevPage} disabled={currentPage === 1}>Previous</button>
                 <span> Page {currentPage} </span>
                 {/* disabled={disableNext} */}
-                <button className='bg-blue-500 rounded-lg text-white px-3 py-3' onClick={nextPage}  disabled={disableNext}>Next</button>
+                <button className='bg-blue-500 rounded-lg text-white px-3 py-3' onClick={nextPage} >Next</button>
             </div>
         );
     };
-
     const fetchProducts = async (page) => {
         try {
             dispatch(getProductsStart());
@@ -57,6 +61,7 @@ function Product() {
             }
 
             const fetchedProducts = await response.json();
+            // console.log(fetchedProducts)
             dispatch(getProductsSuccess(fetchedProducts));
         } catch (error) {
             dispatch(getProductsFailure(error.message));
@@ -102,8 +107,10 @@ function Product() {
                     </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
+                    {/* {console.log(products)} */}
                     {products && Object.values(products).map((product,key) => (
                         <tr key={key}>
+                            {/* {console.log(product)} */}
                             <td className="px-6 py-4 whitespace-nowrap">
                                 <div className="flex items-center">{product._id}</div>
                             </td>

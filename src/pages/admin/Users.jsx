@@ -4,15 +4,19 @@ import { deleteUserFailure, deleteUserStart, deleteUserSuccess, getUsersFailure,
 
 const Users = () => {
   const dispatch = useDispatch();
-  const {users}=useSelector(state=>state.user)
+  const { users } = useSelector(state => state.user)
   const { loading, error } = useSelector((state) => state.user);
   const [currentPage, setCurrentPage] = useState(1)
   const [totalUsers, setTotalUsers] = useState(0);
   const pageSize = 10
+  // console.log(users)
 
   useEffect(() => {
     fetchUsers(currentPage)
-  }, [ currentPage]);
+    return () => {
+      dispatch(getUsersSuccess([]))
+    }
+  }, [currentPage]);
 
   useEffect(() => {
     if (users.length > 0) {
@@ -83,6 +87,7 @@ const Users = () => {
 
       // Handling successful update
       const data = await res.json();
+      // console.log(data)
       dispatch(getUsersSuccess(data));
     } catch (error) {
       // Handling errors
@@ -99,20 +104,51 @@ const Users = () => {
   }
 
   return (
-    <div>
-      <h1>User List</h1>
-      <ul>
-        {Object.values(users).map((user) => (
-          <>
-            <li key={user._id}>
-              {user.username}
-            </li>
-            <button onClick={() => handleDelete(user._id)}>delete</button>
-          </>
-        ))}
-      </ul>
+    <>
+      <table className="min-w-full divide-y divide-gray-200">
+        <thead className="bg-gray-50">
+          <tr>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">UserId</th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone</th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Password</th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">userType</th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+          </tr>
+        </thead>
+        <tbody className="bg-white divide-y divide-gray-200">
+          {/* {console.log(users)} */}
+          {users && Object.values(users).map((user, key) => (
+            <tr key={key}>
+              {/* {console.log(user)} */}
+              <td className="px-6 py-4 whitespace-nowrap">
+                <div className="flex items-center">{user._id}</div>
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap">
+                {user.username}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap">
+                {user.email}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap">
+                {user.phone}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap">
+                {user.password.length>10 ? "********" : user.password}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap">
+                {user.userType}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                <button className="text-red-600 hover:text-red-900" onClick={() => handleDelete(user._id)}>Delete</button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
       {renderPagination()}
-    </div>
+    </>
   );
 };
 

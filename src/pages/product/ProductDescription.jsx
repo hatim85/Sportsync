@@ -19,9 +19,11 @@ function ProductDescription() {
     const [product, setProduct] = useState(null);
     const [isAddedToCart, setIsAddedToCart] = useState(false);
     const [cart, setCart] = useState([]);
-
     useEffect(() => {
         fetchProduct(productId);
+        return () => {
+            dispatch(getProductByIdSuccess([]))
+        }
     }, [productId]);
 
     const fetchProduct = async (productId) => {
@@ -99,35 +101,35 @@ function ProductDescription() {
                     )}
                     <div className="m-[2vw] w-[80vw] md:w-auto flex flex-wrap">
                         {currentUser ? (
-                            <>
-                                {isAddedToCart ? (
+                            currentUser.userType === 'admin' ? (
+                                <p className="text-red-500">Admin cannot purchase</p>
+                            ) : (
+                                isAddedToCart ? (
                                     <Link to="/cart" className="bg-blue-600 text-center w-full md:w-[10vw] rounded-[30px] font-none text-white px-4 py-2">
                                         Go to Cart
                                     </Link>
                                 ) : (
                                     <>
                                         <button
-                                            className={`bg-yellow-600 w-full md:w-[10vw] rounded-[30px] font-none text-white px-4 py-2 md:mr-5`}
+                                            className="bg-yellow-600 w-full md:w-[10vw] rounded-[30px] font-none text-white px-4 py-2 md:mr-5"
                                             onClick={() => handleAddToCart(productId)}
                                         >
                                             Add to Cart
                                         </button>
                                         <Link to='/cart' className='w-full md:w-[10vw] mt-5 md:mt-0'>
-                                            <button onClick={()=>handleAddToCart(productId)} className="bg-orange-600 w-full rounded-[30px] font-none text-white px-4 py-2">
+                                            <button onClick={() => handleAddToCart(productId)} className="bg-orange-600 w-full rounded-[30px] font-none text-white px-4 py-2">
                                                 Buy Now
                                             </button>
                                         </Link>
                                     </>
-                                )}
-                            </>
+                                )
+                            )
                         ) : (
-                            <>
-                                <p className="text-red-500">Please login to buy <br/>
-                                    <Link to='/SignIn'>
-                                        <button className='border bg-blue-500 border-white rounded-full text-white px-4 py-2'>Sign In</button>
-                                    </Link>
-                                </p>
-                            </>
+                            <p className="text-red-500">Please login to buy <br />
+                                <Link to='/SignIn'>
+                                    <button className='border bg-blue-500 border-white rounded-full text-white px-4 py-2'>Sign In</button>
+                                </Link>
+                            </p>
                         )}
                     </div>
                 </div>
@@ -136,5 +138,4 @@ function ProductDescription() {
         </>
     );
 }
-
 export default ProductDescription;

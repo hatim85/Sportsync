@@ -13,10 +13,10 @@ function Category() {
   const [totalCat, setTotalCat] = useState(0)
   const pageSize = 10;
   const [editedCategories, setEditedCategories] = useState({});
-
+  // console.log(categories)
   useEffect(() => {
     fetchCategories(currentPage);
-  }, [dispatch, currentPage]);
+  }, [currentPage]);
 
   useEffect(() => {
     if (categories.length > 0) {
@@ -140,11 +140,11 @@ function Category() {
         },
         body: JSON.stringify({ name: newName }),
       });
-
+      const data=await response.json();
       if (!response.ok) {
         throw new Error('Failed to update category');
       }
-
+      // console.log(data)
       // Dispatch action to update category in Redux state
       dispatch(updateCategorySuccess({ categoryId, newName }));
     } catch (error) {
@@ -193,13 +193,12 @@ function Category() {
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CategoryId</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Products</th>
                 </tr>
               </thead>
-              {categories.map(category => (
                 <>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    <tr key={category._id}>
+              {categories.map((category,key) => (
+                    <tr key={key}>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">{category._id}</div>
                       </td>
@@ -212,9 +211,9 @@ function Category() {
                         />
                       </td>
                     </tr>
-                  </tbody>
+                ))}
+                </tbody>
                 </>
-              ))}
             </table >
           </ul>
         </>

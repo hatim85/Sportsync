@@ -114,8 +114,6 @@ function Profile() {
           <div className="text-sm font-medium text-gray-600">Email</div>
           <div className="text-sm text-gray-800">{editable ? <input type="email" name="email" value={currentUser.email} onChange={handleChange} /> : ''}</div>
           {/* {editable && <FaEdit className="text-sm text-gray-800" onClick={handleEdit} />} */}
-          <div className="text-sm font-medium text-gray-600">Address</div>
-          <div className="text-sm text-gray-800">{editable ? <input type="text" name="address" value={currentUser.address} onChange={handleChange} /> : ''}</div>
           {/* {editable && <FaEdit className="text-sm text-gray-800" onClick={handleEdit} />} */}
         </div>
         {/* {editable && <button className="mt-4 px-4 py-2 bg-blue-500 text-white rounded" onClick={handleUpdate}>Update Account</button>} */}

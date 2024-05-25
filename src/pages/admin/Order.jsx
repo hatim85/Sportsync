@@ -11,9 +11,12 @@ function Order() {
 
     useEffect(() => {
         fetchAllOrders(currentPage)
+        return ()=>{
+            dispatch(getAllAdminOrdersSuccess([]))
+        }
     }, [currentPage])
 
-    const fetchAllOrders = async (req, res) => {
+    const fetchAllOrders = async (page) => {
         dispatch(getAllAdminOrdersStart())
         try {
             const res = await fetch(`${import.meta.env.VITE_PORT}/api/orders/getadminorders?page=${page}`, {
@@ -24,6 +27,7 @@ function Order() {
             })
             if (!res.ok) { throw new Error("invalid response: ", res) }
             const data = await res.json()
+            // console.log(data)
             dispatch(getAllAdminOrdersSuccess(data))
         } catch (error) {
             dispatch(getAllAdminOrdersFailure(error.message))
@@ -44,7 +48,7 @@ function Order() {
             <div className='w-[100%] flex justify-between'>
                 <button className='bg-blue-500 rounded-lg text-white px-3 py-3' onClick={prevPage} disabled={currentPage === 1}>Previous</button>
                 <span> Page {currentPage} </span>
-                <button className='bg-blue-500 rounded-lg text-white px-3 py-3' onClick={nextPage} disableNext >Next</button>
+                <button className='bg-blue-500 rounded-lg text-white px-3 py-3' onClick={nextPage} disabled={currentPage>=pageSize && disableNext} >Next</button>
             </div>
         );
     };
