@@ -97,14 +97,20 @@ function MyOrders() {
                           </div>
                         );
                       })}
-                    <button
-                      onClick={() => handleCancelOrder(order._id)}
-                      className="text-white px-4 py-2 bg-red-500 absolute bottom-5 right-5 rounded-xl"
-                    >
-                      Cancel
-                    </button>
+                    {order.status == 'cancelled' ? (
+                      <p className="text-red-600">Cancelled</p>
+                    ) : (
+                      <>
+                        <button
+                          onClick={() => handleCancelOrder(order._id)}
+                          className="text-white px-4 py-2 bg-red-500 absolute bottom-5 right-5 rounded-xl"
+                        >
+                          Cancel
+                        </button>
+                        <p className="mt-4">Order Status: {order.status}</p>
+                      </>
+                    )}
                   </div>
-                  <p className="mt-4">Order Status: {order.status}</p>
                   <p className="font-bold mt-2">Total Amount: ₹{order.totalAmount}</p>
                 </div>
               ))}
