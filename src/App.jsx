@@ -21,6 +21,7 @@ import AddressCard from './components/AddressCard';
 import AddressForm from './pages/AddressForm';
 import PaymentSuccess from './pages/PaymentSuccess';
 import MyOrders from './pages/MyOrders';
+import NotFound from './pages/NotFound';
 function App() {
 
   return (
@@ -47,6 +48,7 @@ function App() {
           <Route path='/payment' element={<About/>}/>
           <Route path='/paymentsuccess' element={<PaymentSuccess/>} />
           <Route path='/myorders' element={<MyOrders/>} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
     </>
