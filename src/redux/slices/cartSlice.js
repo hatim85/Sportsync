@@ -63,7 +63,8 @@ const cartSlice = createSlice({
         removeCartItemSuccess(state, action) {
             state.loading = false;
             state.error = null;
-            state.cartItems = state.cartItems.filter(item => item._id !== action.payload);
+            // state.cartItems = state.cartItems.filter(item => item._id !== action.payload);
+            state.cartItems = state.cartItems.filter(item => item.cartItemId !== action.payload);
         },
         removeCartItemFailure(state, action) {
             state.error = action.payload;

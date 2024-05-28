@@ -10,7 +10,6 @@ function Product() {
     // const { products } = useSelector(state => state.product);
     const [currentPage, setCurrentPage] = useState(1)
     const [totalProducts, setTotalProducts] = useState(0);
-    // console.log(products)
     const pageSize = 10
 
     useEffect(() => {
@@ -61,7 +60,6 @@ function Product() {
             }
 
             const fetchedProducts = await response.json();
-            // console.log(fetchedProducts)
             dispatch(getProductsSuccess(fetchedProducts));
         } catch (error) {
             dispatch(getProductsFailure(error.message));
@@ -107,10 +105,8 @@ function Product() {
                     </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                    {/* {console.log(products)} */}
                     {products && Object.values(products).map((product,key) => (
                         <tr key={key}>
-                            {/* {console.log(product)} */}
                             <td className="px-6 py-4 whitespace-nowrap">
                                 <div className="flex items-center">{product._id}</div>
                             </td>

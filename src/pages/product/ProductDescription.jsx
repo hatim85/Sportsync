@@ -4,7 +4,7 @@ import Header from '../../components/Header'
 import Footer from '../../components/Footer'
 import { useDispatch, useSelector } from 'react-redux'
 import { getProductByIdFailure, getProductByIdStart, getProductByIdSuccess } from '../../redux/slices/productSlice'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { addCartItemFailure, addCartItemStart, addCartItemSuccess } from '../../redux/slices/cartSlice'
 import ProductCard from '../../components/ProductCard'
@@ -13,6 +13,7 @@ function ProductDescription() {
     const dispatch = useDispatch();
     const [quantity, setQuantity] = useState(1);
     const { productId } = useParams();
+    const navigate=useNavigate();
     const [loading, setLoading] = useState(false);
     const { category } = useSelector(state => state.product);
     const { currentUser } = useSelector(state => state.user);
@@ -57,7 +58,7 @@ function ProductDescription() {
 
         try {
             dispatch(addCartItemStart());
-            const res = await fetch(`${import.meta.env.VITE_PORT}/api/cartItem/addToCart/${productId}`, {
+            const res = await fetch(`${import.meta.env.VITE_PORT}/api/cart/addToCart/${productId}`, {
                 method: 'POST',
                 headers: {
                     "Content-Type": "application/json"
@@ -73,6 +74,39 @@ function ProductDescription() {
             setIsAddedToCart(true);
             toast.success('Product added to cart');
 
+            // Add the product to local storage
+            const updatedCart = [...cart, productId];
+            setCart(updatedCart);
+            localStorage.setItem('cart', JSON.stringify(updatedCart));
+        } catch (error) {
+            dispatch(addCartItemFailure(error.message));
+        }
+        setQuantity(1);
+    };
+    const handleBuyNow = async (productId) => {
+        if (!currentUser) {
+            toast.error('Please log in to add items to the cart');
+            return;
+        }
+
+        try {
+            dispatch(addCartItemStart());
+            const res = await fetch(`${import.meta.env.VITE_PORT}/api/cart/addToCart/${productId}`, {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ userId: currentUser._id })
+            });
+            if (!res.ok) {
+                toast.error('Something went wrong');
+                throw new Error('Failed to add product to cart');
+            }
+            const data = await res.json();
+            dispatch(addCartItemSuccess(data));
+            setIsAddedToCart(true);
+            toast.success('Product added to cart');
+            navigate('/cart')
             // Add the product to local storage
             const updatedCart = [...cart, productId];
             setCart(updatedCart);
@@ -116,11 +150,9 @@ function ProductDescription() {
                                         >
                                             Add to Cart
                                         </button>
-                                        <Link to='/cart' className='w-full md:w-[10vw] mt-5 md:mt-0'>
-                                            <button onClick={() => handleAddToCart(productId)} className="bg-orange-600 w-full rounded-[30px] font-none text-white px-4 py-2">
-                                                Buy Now
-                                            </button>
-                                        </Link>
+                                        <button onClick={()=>handleBuyNow(productId)} className=" md:w-[10vw] mt-5 md:mt-0 bg-orange-600 w-full rounded-[30px] font-none text-white px-4 py-2">
+                                            Buy Now
+                                        </button>
                                     </>
                                 )
                             )

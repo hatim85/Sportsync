@@ -33,22 +33,6 @@ function Profile() {
     setEditable(true);
   }
 
-  const handleUpdate = async () => {
-    try {
-      dispatch(updateStart(formData));
-      const res=await fetch(`${import.meta.env.VITE_PORT}/api/user/update/${userId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-      })
-      setEditable(false);
-    } catch (error) {
-      setError(error.message);
-    }
-  }
-
   const handleChange = e => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -95,7 +79,6 @@ function Profile() {
       toast.error(error.message)
     }
   }
-  // console.log(currentUser)
   return (
     <>
       <Header />
@@ -107,16 +90,11 @@ function Profile() {
         <div className="grid grid-cols-2 gap-4 pt-4">
           <div className="text-sm font-medium text-gray-600">Username</div>                                                                             {/*currentUser.username*/}
           <div className="text-sm text-gray-800">{editable ? <input type="text" name="username" value={currentUser.username} onChange={handleChange} /> : ''}</div>
-          {/* {editable && <FaEdit className="text-sm text-gray-800" onClick={handleEdit} />} */}
           <div className="text-sm font-medium text-gray-600">Mobile Number</div>
           <div className="text-sm text-gray-800">{editable ? <input type="text" name="phone" value={currentUser.phone} onChange={handleChange} /> : ''}</div>
-          {/* {editable && <FaEdit className="text-sm text-gray-800" onClick={handleEdit} />} */}
           <div className="text-sm font-medium text-gray-600">Email</div>
           <div className="text-sm text-gray-800">{editable ? <input type="email" name="email" value={currentUser.email} onChange={handleChange} /> : ''}</div>
-          {/* {editable && <FaEdit className="text-sm text-gray-800" onClick={handleEdit} />} */}
-          {/* {editable && <FaEdit className="text-sm text-gray-800" onClick={handleEdit} />} */}
         </div>
-        {/* {editable && <button className="mt-4 px-4 py-2 bg-blue-500 text-white rounded" onClick={handleUpdate}>Update Account</button>} */}
         <button className="mt-4 px-4 py-2 bg-red-500 text-white rounded" onClick={handleDeleteUser}>Deactivate Account</button>
         <Link to={'/'}><button className="mt-4 ml-5 px-4 py-2 bg-blue-500 text-white rounded">Back to Home</button></Link>
         <Link to={'/myorders'}><button className="mt-4 ml-5 px-4 py-2 bg-blue-500 text-white rounded">My Orders</button></Link>

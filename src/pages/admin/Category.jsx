@@ -13,7 +13,6 @@ function Category() {
   const [totalCat, setTotalCat] = useState(0)
   const pageSize = 10;
   const [editedCategories, setEditedCategories] = useState({});
-  // console.log(categories)
   useEffect(() => {
     fetchCategories(currentPage);
   }, [currentPage]);
@@ -42,34 +41,6 @@ function Category() {
         <button className='bg-blue-500 rounded-lg text-white px-3 py-3' onClick={nextPage} disabled={disableNext}>Next</button>
       </div>
     );
-  };
-
-  const handleCategoryUpdate = async (categoryId, newName) => {
-    setLoading(true);
-    setError('');
-
-    try {
-      dispatch(updateCategoryStart());
-      const response = await fetch(`${import.meta.env.VITE_PORT}/api/categories/update/${categoryId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name: newName })
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to update category');
-      }
-
-      // Dispatch action to update category in Redux state
-      dispatch(updateCategorySuccess({ categoryId, newName }));
-    } catch (error) {
-      setError(error.message);
-      dispatch(updateCategoryFailure(error.message));
-    } finally {
-      setLoading(false);
-    }
   };
 
   const fetchCategories = async () => {
@@ -117,44 +88,6 @@ function Category() {
     }
   }
 
-  const handleInputChange = async (e, category) => {
-    const newName = e.target.value;
-    const categoryId = category._id;
-    setLoading(true);
-    setError('');
-
-    try {
-      // Update category locally first
-      const updatedCategories = categories.map(cat => cat._id === categoryId ? { ...cat, name: newName } : cat);
-      // Assuming you have a function to update categories locally or dispatch an action to update in Redux
-      // For Redux, you would dispatch an action to update the categories
-      // For local state, you would use useState and update the state directly
-      // updateCategoriesLocally(updatedCategories); 
-
-      // Now make the API call to update category
-      dispatch(updateCategoryStart());
-      const response = await fetch(`${import.meta.env.VITE_PORT}/api/categories/update/${categoryId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name: newName }),
-      });
-      const data=await response.json();
-      if (!response.ok) {
-        throw new Error('Failed to update category');
-      }
-      // console.log(data)
-      // Dispatch action to update category in Redux state
-      dispatch(updateCategorySuccess({ categoryId, newName }));
-    } catch (error) {
-      setError(error.message);
-      dispatch(updateCategoryFailure(error.message));
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleDelete = (categoryId) => {
     try {
       dispatch(deleteCategoryStart());
@@ -175,12 +108,6 @@ function Category() {
   }
   return (
     <>
-    {/* <li key={category._id}>
-                    <input type="text" value={category.name} onChange={(e) => handleInputChange(e, category)} /><br />
-                    <button onClick={() => handleCategoryUpdate(category._id, category.name)}>Save</button>
-                    <button onClick={() => fetchCategoryProducts(category._id)}>See Products</button>
-                    <button onClick={() => handleDelete(category._id)}>Delete</button>
-                  </li> */}
       {loading ? (
         <p>Loading...</p>
       ) : error ? (
@@ -193,27 +120,26 @@ function Category() {
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CategoryId</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
-                <>
-                  <tbody className="bg-white divide-y divide-gray-200">
-              {categories.map((category,key) => (
+              <>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {categories.map((category, key) => (
                     <tr key={key}>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">{category._id}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <input
-                          type="text"
-                          value={editedCategories[category._id]?.editedName || category.name}
-                          onChange={(e) => handleInputChange(e, category._id, 'editedName')}
-                          className="w-full"
-                        />
+                        {category.name}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <button className='text-red-500' onClick={() => handleDelete(category._id)}>Delete</button>
                       </td>
                     </tr>
-                ))}
+                  ))}
                 </tbody>
-                </>
+              </>
             </table >
           </ul>
         </>

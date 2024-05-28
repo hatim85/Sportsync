@@ -23,7 +23,6 @@ function HeaderParent() {
             if (response.ok) {
                 const data = await response.json()
                 if (data) {
-                    console.log(data)
                     dispatch(searchProductsSuccess(data))
                     setSearchResult(data)
                 }

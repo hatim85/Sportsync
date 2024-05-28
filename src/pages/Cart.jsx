@@ -11,10 +11,8 @@ import AddressCard from '../components/AddressCard';
 function Cart() {
     const dispatch = useDispatch();
     const { cartItems, loading, error } = useSelector(state => state.cart);
-    console.log(cartItems)
     const { currentUser } = useSelector(state => state.user);
     const userId = currentUser._id;
-    console.log(currentUser)
 
     {/* Refresh the page in cart for see the reflecting changes sometimes it doesn't update the changes directly  */ }
 
@@ -24,7 +22,7 @@ function Cart() {
     }, []);
 
     const handleDelete = async (itemId) => {
-        dispatch(removeCartItemSuccess(itemId));
+        dispatch(removeCartItemStart());
         try {
             const res = await fetch(`${import.meta.env.VITE_PORT}/api/cart/delete/${itemId}`, {
                 method: "DELETE",
@@ -35,6 +33,7 @@ function Cart() {
             if (!res.ok) {
                 throw new Error('Failed to delete item');
             }
+            dispatch(removeCartItemSuccess(itemId));
             toast.success("Item removed from cart");
         } catch (error) {
             dispatch(removeCartItemFailure(error.message));
@@ -64,7 +63,6 @@ function Cart() {
         }
     };
     const fetchCartItems = async (userId) => {
-        console.log(userId)
         dispatch(fetchCartItemsRequest());
         try {
             const response = await fetch(`${import.meta.env.VITE_PORT}/api/cart/getcart/${userId}`, {
@@ -86,12 +84,12 @@ function Cart() {
 
 
     const userAddress = currentUser.address;
-    const quantityOptions = [1, 2, 3, 4, 5, 6];
+    const quantityOptions = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16];
     return (
         <>
             <DummyHeader />
             <AddressCard className='w-fit' />
-            <div className='flex w-full flex-wrap h-screen bg-gray-300'>
+            <div className='flex w-full flex-wrap h-max bg-gray-300'>
                 <div className='md:w-[65%] m-5'>
                     {loading && <p>Loading...</p>}
                     {error && <p>Error: {error}</p>}
@@ -119,7 +117,7 @@ function Cart() {
                                             <p className=' font-semibold mb-1'>₹{item.product.price}<del className='text-gray-400'>₹{item.product.price + 100}</del></p>
                                             <p className='text-gray-600 mb-1'>Delivery by 05th Apr 2024</p>
                                         </div>
-                                        <FaTrash className='text-gray-600 text-xl cursor-pointer' onClick={() => handleDelete(item.cartItemId)} />
+                                        <FaTrash className='text-gray-600 text-xl cursor-pointer' onClick={()=>handleDelete(item.cartItemId)} />
                                         {/* refresh the page for reflecting product deletion */}
                                     </div>
                                     <hr />

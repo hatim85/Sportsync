@@ -27,7 +27,6 @@ function Order() {
             })
             if (!res.ok) { throw new Error("invalid response: ", res) }
             const data = await res.json()
-            // console.log(data)
             dispatch(getAllAdminOrdersSuccess(data))
         } catch (error) {
             dispatch(getAllAdminOrdersFailure(error.message))

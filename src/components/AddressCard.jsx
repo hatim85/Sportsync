@@ -60,7 +60,6 @@ function AddressCard() {
             toast.success('Address Deleted');
         }
         catch(error){
-            console.log(error.message);
             dispatch(deleteAddressFailure(error.message));
         }
     }

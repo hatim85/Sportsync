@@ -16,7 +16,6 @@ function ImageGallery() {
           throw new Error('Failed to fetch category images');
         }
         const data = await response.json();
-        // console.log(data)
         setCategories(data);
         setLoading(false);
       } catch (error) {

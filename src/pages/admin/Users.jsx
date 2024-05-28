@@ -9,7 +9,6 @@ const Users = () => {
   const [currentPage, setCurrentPage] = useState(1)
   const [totalUsers, setTotalUsers] = useState(0);
   const pageSize = 10
-  // console.log(users)
 
   useEffect(() => {
     fetchUsers(currentPage)
@@ -81,16 +80,12 @@ const Users = () => {
       });
 
       if (!res.ok) {
-        // Handling non-successful status codes
         const errorData = await res.json();
       }
 
-      // Handling successful update
       const data = await res.json();
-      // console.log(data)
       dispatch(getUsersSuccess(data));
     } catch (error) {
-      // Handling errors
       dispatch(getUsersFailure(error.message));
     }
   }
@@ -118,10 +113,8 @@ const Users = () => {
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
-          {/* {console.log(users)} */}
           {users && Object.values(users).map((user, key) => (
             <tr key={key}>
-              {/* {console.log(user)} */}
               <td className="px-6 py-4 whitespace-nowrap">
                 <div className="flex items-center">{user._id}</div>
               </td>
