@@ -5,7 +5,7 @@ function ProductCard() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {//removed async await
+  useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {

@@ -1,10 +1,6 @@
 import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { FaEdit } from 'react-icons/fa'
 import {
-  updateStart,
-  updateSuccess,
-  updateFailure,
   deleteUserStart,
   deleteUserSuccess,
   deleteUserFailure,

@@ -13,7 +13,7 @@ function AddressForm() {
     const navigate=useNavigate();
 
     const [formData, setFormData] = useState({
-        name: '',
+        fullName: '',
         addressLine1: '',
         addressLine2: '',
         city: '',

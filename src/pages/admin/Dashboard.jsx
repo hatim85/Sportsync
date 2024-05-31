@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { FaHome } from 'react-icons/fa'
-import { Link, Route, Routes, useLocation } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import Product from './Product'
 import DashSidebar from './DashSidebar';
 import Category from './Category';
 import Users from './Users';
-import GetAllUsers from './Users';
 import Order from './Order';
 
 

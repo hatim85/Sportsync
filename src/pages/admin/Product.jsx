@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getProductsStart, getProductsFailure, getProductsSuccess, updateProductFailure, updateProductSuccess, updateProductStart, deleteProductStart, deleteProductSuccess, deleteProductFailure, getProductStart, getProductSuccess, getProductFailure } from '../../redux/slices/productSlice';
-import { Link } from 'react-router-dom';
+import { getProductsStart, getProductsFailure, getProductsSuccess, deleteProductStart, deleteProductSuccess, deleteProductFailure } from '../../redux/slices/productSlice';
 import { toast } from 'react-toastify';
 
 function Product() {

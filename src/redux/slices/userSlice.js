@@ -167,7 +167,6 @@ export const fetchUser = (userId) => async (dispatch) => {
             const errorData = await res.json();
             throw new Error(errorData.message || 'Failed to update product');
         }
-        // const response = await axios.get(`/api/users/${userId}`);
         dispatch(getUserSuccess(response.data));
     } catch (error) {
         dispatch(getUserFailure(error.response.data.message));

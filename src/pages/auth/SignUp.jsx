@@ -4,18 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify'
 
 function SignUp() {
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
-
-
-  // const handlePasswordChange = (e) => {
-  //     setPassword(e.target.value);
-  // };
-
-  // const handleConfirmPasswordChange = (e) => {
-  //     setConfirmPassword(e.target.value);
-  // };
 
   const [formData, setFormData] = useState({
     username: '',

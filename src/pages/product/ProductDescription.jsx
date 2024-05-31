@@ -1,31 +1,32 @@
-import React, { useEffect, useState } from 'react'
-import ImageDescription from '../../components/ImageDescription'
-import Header from '../../components/Header'
-import Footer from '../../components/Footer'
-import { useDispatch, useSelector } from 'react-redux'
-import { getProductByIdFailure, getProductByIdStart, getProductByIdSuccess } from '../../redux/slices/productSlice'
-import { Link, useNavigate, useParams } from 'react-router-dom'
-import { toast } from 'react-toastify'
-import { addCartItemFailure, addCartItemStart, addCartItemSuccess } from '../../redux/slices/cartSlice'
-import ProductCard from '../../components/ProductCard'
+import React, { useEffect, useState } from 'react';
+import ImageDescription from '../../components/ImageDescription';
+import Header from '../../components/Header';
+import Footer from '../../components/Footer';
+import { useDispatch, useSelector } from 'react-redux';
+import { getProductByIdFailure, getProductByIdStart, getProductByIdSuccess } from '../../redux/slices/productSlice';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { addCartItemFailure, addCartItemStart, addCartItemSuccess } from '../../redux/slices/cartSlice';
 
 function ProductDescription() {
     const dispatch = useDispatch();
     const [quantity, setQuantity] = useState(1);
     const { productId } = useParams();
-    const navigate=useNavigate();
+    const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
-    const { category } = useSelector(state => state.product);
     const { currentUser } = useSelector(state => state.user);
     const [product, setProduct] = useState(null);
     const [isAddedToCart, setIsAddedToCart] = useState(false);
-    const [cart, setCart] = useState([]);
+
     useEffect(() => {
         fetchProduct(productId);
-        return () => {
-            dispatch(getProductByIdSuccess([]))
+        if (currentUser) {
+            fetchCartItems(productId);
         }
-    }, [productId]);
+        return () => {
+            dispatch(getProductByIdSuccess([]));
+        };
+    }, [productId, currentUser]);
 
     const fetchProduct = async (productId) => {
         try {
@@ -43,10 +44,28 @@ function ProductDescription() {
             dispatch(getProductByIdSuccess(data));
             setProduct(data);
             setLoading(false);
-            return data;
         } catch (error) {
             dispatch(getProductByIdFailure(error.message));
             setLoading(false);
+        }
+    };
+
+    const fetchCartItems = async (productId) => {
+        try {
+            const response = await fetch(`${import.meta.env.VITE_PORT}/api/cart/getcart/${currentUser._id}`, {
+                method: 'GET',
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
+            if (!response.ok) {
+                throw new Error('Failed to fetch cart items');
+            }
+            const data = await response.json();
+            const isProductInCart = data.some(item => item.product._id === productId);
+            setIsAddedToCart(isProductInCart);
+        } catch (error) {
+            console.error('Error fetching cart items:', error.message);
         }
     };
 
@@ -73,16 +92,12 @@ function ProductDescription() {
             dispatch(addCartItemSuccess(data));
             setIsAddedToCart(true);
             toast.success('Product added to cart');
-
-            // Add the product to local storage
-            const updatedCart = [...cart, productId];
-            setCart(updatedCart);
-            localStorage.setItem('cart', JSON.stringify(updatedCart));
         } catch (error) {
             dispatch(addCartItemFailure(error.message));
         }
         setQuantity(1);
     };
+
     const handleBuyNow = async (productId) => {
         if (!currentUser) {
             toast.error('Please log in to add items to the cart');
@@ -106,11 +121,7 @@ function ProductDescription() {
             dispatch(addCartItemSuccess(data));
             setIsAddedToCart(true);
             toast.success('Product added to cart');
-            navigate('/cart')
-            // Add the product to local storage
-            const updatedCart = [...cart, productId];
-            setCart(updatedCart);
-            localStorage.setItem('cart', JSON.stringify(updatedCart));
+            navigate('/cart');
         } catch (error) {
             dispatch(addCartItemFailure(error.message));
         }
@@ -150,7 +161,7 @@ function ProductDescription() {
                                         >
                                             Add to Cart
                                         </button>
-                                        <button onClick={()=>handleBuyNow(productId)} className=" md:w-[10vw] mt-5 md:mt-0 bg-orange-600 w-full rounded-[30px] font-none text-white px-4 py-2">
+                                        <button onClick={() => handleBuyNow(productId)} className=" md:w-[10vw] mt-5 md:mt-0 bg-orange-600 w-full rounded-[30px] font-none text-white px-4 py-2">
                                             Buy Now
                                         </button>
                                     </>
@@ -170,4 +181,5 @@ function ProductDescription() {
         </>
     );
 }
+
 export default ProductDescription;

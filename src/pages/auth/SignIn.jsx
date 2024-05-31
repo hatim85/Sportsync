@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { FaEye, FaEyeSlash, FaHome } from 'react-icons/fa';
-import { FaSpinner } from 'react-icons/fa';
-import { Alert, Spinner } from 'flowbite-react'
+import { Alert } from 'flowbite-react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link, useNavigate } from 'react-router-dom'
 import { signInStart, signInSuccess, signInFailure } from '../../redux/slices/userSlice.js'
@@ -60,9 +59,6 @@ function SignIn() {
 
     return (
         <>
-            {/* <Spinner size='sm' color="gray" visible={loading} /> */}
-            {/* <FaSpinner className='h-5 w-5 animate-spin'/> */}
-            {/* {loading && <Spinner size='sm' color="gray" visible={loading} />}  */}
             <div className='flex justify-center items-center w-screen h-[15vh]'>
                 <Link to="/"><p className="absolute left-4"><FaHome className='h-5 w-5' />Back</p></Link>
                 <Link to="/"><h1 className='font-bold text-3xl'>Sportsync</h1></Link>

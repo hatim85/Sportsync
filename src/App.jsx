@@ -16,8 +16,6 @@ import FaqPage from './pages/FAQPage';
 import Privacy from './pages/Privacy';
 import Terms from './pages/Terms';
 import OnlyAdminPrivateRoute from './components/OnlyAdminPrivateRoute';
-import DummyHeader from './components/DummyHeader';
-import AddressCard from './components/AddressCard';
 import AddressForm from './pages/AddressForm';
 import PaymentSuccess from './pages/PaymentSuccess';
 import MyOrders from './pages/MyOrders';

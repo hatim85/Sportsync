@@ -1,8 +1,6 @@
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
 import axios from 'axios';
-import { createPaymentFailure, createPaymentStart, createPaymentSuccess } from '../redux/slices/paymentSlice';
 
 function OrderSummary({ cartItems }) {
     const { currentUser } = useSelector(state => state.user);

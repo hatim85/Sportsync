@@ -1,10 +1,8 @@
 import React from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import DummyHeader from '../components/DummyHeader'
 
 function PaymentSuccess() {
-    // const searchQuery=useSearchParams()[0]
-    // const referenceNum=searchQuery.get("reference")
   return (
     <>
         <DummyHeader/>

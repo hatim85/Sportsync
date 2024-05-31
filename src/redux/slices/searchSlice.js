@@ -1,5 +1,4 @@
 import { createSlice } from '@reduxjs/toolkit';
-import axios from 'axios'; // Assuming you use axios for HTTP requests
 
 const initialState = {
   loading: false,

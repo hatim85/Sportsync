@@ -1,8 +1,5 @@
 import React from 'react'
-import { useEffect } from 'react';
-import { useState } from 'react';
-import axios from 'axios';
-import { Link } from 'react-router-dom';
+import { useEffect,useState } from 'react';
 
 function BigCategoryCard() {
     const [categories, setCategories] = useState([]);
@@ -21,7 +18,7 @@ function BigCategoryCard() {
                 if (!response.ok) {
                     throw new Error('Failed to fetch categories');
                 }
-                const data = await response.json(); // parse the JSON response
+                const data = await response.json(); 
                 setCategories(data);
                 setLoading(false);
             } catch (error) {
