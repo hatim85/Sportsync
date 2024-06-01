@@ -80,10 +80,18 @@ const cartSlice = createSlice({
         },
         updateCartItemQuantitySuccess(state, action) {
             state.loading = false;
-            state.cartItems = state.cartItems.map(item =>
-                item.cartItemId === action.payload.cartItemId ? { ...item, quantity: action.payload.quantity } : item
-            );
-        },
+            const updatedCartItems = state.cartItems.map(item => {
+                if (item.cartItemId === action.payload.cartItemId) {
+                    const updatedItem = { ...item, quantity: action.payload.quantity };
+                    return updatedItem;
+                }
+        
+                return item;
+            });
+        
+            state.cartItems = updatedCartItems;
+        },            
+        
         updateCartItemQuantityFailure(state, action) {
             state.loading = false;
             state.error = action.payload;

@@ -13,12 +13,14 @@ function Cart() {
     const { currentUser } = useSelector(state => state.user);
     const userId = currentUser._id;
 
-    // Fetch cart items on component mount
     useEffect(() => {
         fetchCartItems(userId);
-    }, [userId]);
 
-    // Function to delete an item from the cart
+        return ()=>{
+            dispatch(fetchCartItemsSuccess([]))
+        }
+    }, [userId,dispatch]);
+
     const handleDelete = async (itemId) => {
         dispatch(removeCartItemStart());
         try {
@@ -43,7 +45,6 @@ function Cart() {
         }
     };
 
-    // Function to update the quantity of an item in the cart
     const updateCartItemQuantity = async (cartItemId, quantity) => {
         dispatch(updateCartItemQuantityStart());
         try {
@@ -58,7 +59,7 @@ function Cart() {
                 throw new Error('Failed to update quantity');
             }
             const data = await res.json();
-            dispatch(updateCartItemQuantitySuccess(data));
+            dispatch(updateCartItemQuantitySuccess({cartItemId,quantity}));
             toast.success('Quantity updated successfully');
 
             // Update local storage
@@ -74,7 +75,6 @@ function Cart() {
         }
     };
 
-    // Function to fetch cart items
     const fetchCartItems = async (userId) => {
         dispatch(fetchCartItemsRequest());
         try {
@@ -90,7 +90,6 @@ function Cart() {
             const data = await response.json();
             dispatch(fetchCartItemsSuccess(data));
 
-            // Store fetched items in local storage
             localStorage.setItem('cartItems', JSON.stringify(data));
         }
         catch (error) {

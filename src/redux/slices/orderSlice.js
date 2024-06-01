@@ -28,6 +28,8 @@ const orderSlice = createSlice({
             state.error=null
         },
         updateOrderStatusSuccess: (state, action) => {
+            state.error=null;
+            state.loading=false;
             state.orders = state.orders.map((order) =>
                 order._id === action.payload.orderId
                     ? { ...order, status: action.payload.status }
