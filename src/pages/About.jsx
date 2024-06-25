@@ -5,9 +5,9 @@ import { Link } from 'react-router-dom';
 const About = () => {
   return (
     <>
-    <div className='flex py-5'><Link to='/'><FaHome className='h-6 w-6 m-5'/></Link><h1 className='text-4xl font-bold mx-auto my-auto'>SportSync</h1></div><hr/>
+    <div className='flex py-5'><Link to='/'><FaHome className='h-6 w-6 m-5'/></Link><h1 className='text-4xl font-bold mx-auto my-auto'>Sportsync</h1></div><hr/>
       <div className="container mx-auto py-12 px-4">
-        <h1 className="text-4xl font-bold mb-8 text-center">About Us</h1>
+        <h1 className="text-4xl font-bold mb-8 text-center">About us</h1>
         <div className="text-lg max-w-2xl mx-auto">
           <p className="mb-4">
             SportSync is dedicated to providing high-quality sports equipment to athletes of all levels.

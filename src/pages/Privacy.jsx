@@ -5,9 +5,9 @@ import { Link } from 'react-router-dom';
 const Privacy = () => {
   return (
     <>
-    <div className='flex py-5'><Link to='/'><FaHome className='h-6 w-6 m-5'/></Link><h1 className='text-4xl font-bold mx-auto my-auto'>SportSync</h1></div><hr/>
+    <div className='flex py-5'><Link to='/'><FaHome className='h-6 w-6 m-5'/></Link><h1 className='text-4xl font-bold mx-auto my-auto'>Sportsync</h1></div><hr/>
       <div className="container mx-auto py-12 px-4">
-        <h1 className="text-4xl font-bold mb-8 text-center">Privacy Policy</h1>
+        <h1 className="text-4xl font-bold mb-8 text-center">Privacy policy</h1>
         <div className="max-w-3xl mx-auto">
           <p className="text-lg mb-4">
             At SportSync, we are committed to protecting the privacy and security of our users' personal information. This Privacy Policy outlines how we collect, use, and safeguard the information you provide to us when using our website and services.

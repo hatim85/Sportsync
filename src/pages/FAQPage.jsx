@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 const FaqPage = () => {
   return (
     <>
-    <div className='flex py-5'><Link to='/'><FaHome className='h-6 w-6 m-5'/></Link><h1 className='text-4xl font-bold mx-auto my-auto'>SportSync</h1></div><hr/>
+    <div className='flex py-5'><Link to='/'><FaHome className='h-6 w-6 m-5'/></Link><h1 className='text-4xl font-bold mx-auto my-auto'>Sportsync</h1></div><hr/>
     <div className="container mx-auto py-12 px-4">
       <h1 className="text-4xl font-bold mb-8 text-center">Frequently Asked Questions</h1>
       <div className="max-w-3xl mx-auto">

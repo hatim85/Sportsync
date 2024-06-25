@@ -5,9 +5,9 @@ import { Link } from 'react-router-dom';
 const Terms = () => {
   return (
     <>
-    <div className='flex py-5'><Link to='/'><FaHome className='h-6 w-6 m-5'/></Link><h1 className='text-4xl font-bold mx-auto my-auto'>SportSync</h1></div><hr/>
+    <div className='flex py-5'><Link to='/'><FaHome className='h-6 w-6 m-5'/></Link><h1 className='text-4xl font-bold mx-auto my-auto'>Sportsync</h1></div><hr/>
     <div className="container mx-auto py-5 px-4">
-      <h1 className="text-4xl font-bold mb-8 text-center">Terms and Conditions</h1>
+      <h1 className="text-4xl font-bold mb-8 text-center">Terms and conditions</h1>
       <div className="max-w-3xl mx-auto">
         <p className="text-lg mb-4">
           By accessing and using SportSync (the "Service"), you agree to be bound by these Terms and Conditions. Please read them carefully before using the Service.

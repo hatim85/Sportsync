@@ -35,13 +35,6 @@ function ImageGallery() {
     setCurrentIndex((prevIndex) => (prevIndex === 0 ? categories.length - 1 : prevIndex - 1));
   };
 
-  const intervalRef = useRef(null);
-
-  useEffect(() => {
-    intervalRef.current = setInterval(goToNext, 2000);
-    return () => clearInterval(intervalRef.current);
-  }, [currentIndex]);
-
   return (
     <div className="relative w-full h-full">
       <div className="flex justify-center items-center h-full w-auto">
