@@ -1,4 +1,4 @@
-  import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { FaChevronCircleLeft, FaChevronCircleRight } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 
@@ -35,6 +35,13 @@ function ImageGallery() {
     setCurrentIndex((prevIndex) => (prevIndex === 0 ? categories.length - 1 : prevIndex - 1));
   };
 
+  const intervalRef = useRef(null);
+
+  useEffect(() => {
+    intervalRef.current = setInterval(goToNext, 2000);
+    return () => clearInterval(intervalRef.current);
+  }, [currentIndex]);
+
   return (
     <div className="relative w-full h-full">
       <div className="flex justify-center items-center h-full w-auto">
@@ -44,16 +51,16 @@ function ImageGallery() {
         <div className="overflow-hidden flex-shrink-0" style={{ width: '100%', display: 'flex' }}>
           {categories.map((category, index) => (
             <div key={index} className={`w-full ${currentIndex === index ? '' : 'hidden'}`}>
-            <Link to={`/categories/${category.categoryId}`}>
-              <div className="m-auto w-screen category-card-link">
-                <img
-                  src={`/${category.image}`}
-                  alt={`Image ${index}`}
-                  onError={(e) => e.target.src = '/ErrorImage.png'}
-                  className="h-[30vh] md:h-[60vh] w-full"
-                />
-              </div>
-            </Link>
+              <Link to={`/categories/${category.categoryId}`}>
+                <div className="m-auto w-screen category-card-link">
+                  <img
+                    src={`/${category.image}`}
+                    alt={`Image ${index}`}
+                    onError={(e) => e.target.src = '/ErrorImage.png'}
+                    className="h-[30vh] md:h-[60vh] w-full"
+                  />
+                </div>
+              </Link>
             </div>
           ))}
         </div>
