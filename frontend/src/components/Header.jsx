@@ -80,7 +80,7 @@ function Header() {
                     <div className="hidden md:flex flex-col items-start bg-secondary px-3 py-1.5 rounded border border-border shadow-sm group">
                         <div className="flex items-center text-xs md:text-sm text-foreground space-x-1 lg:space-x-2 group-hover:text-primary transition-colors">
                             <FaPhoneAlt className="h-3 w-3 md:h-3.5 md:w-3.5" />
-                            <span className="tracking-[0.1em] font-bold">+1-800-SPORTS</span>
+                            <span className="tracking-[0.1em] font-bold">+91 93164 02819</span>
                         </div>
                         <p className="text-[8px] text-muted-foreground uppercase tracking-widest font-bold mt-0.5">24/7 Support</p>
                     </div>
@@ -262,7 +262,7 @@ function Header() {
                         <p className="text-[10px] tracking-widest text-muted-foreground uppercase font-bold mb-4">24/7 Support</p>
                         <div className="flex items-center space-x-4 text-sm text-foreground uppercase tracking-widest font-black hover:text-primary cursor-pointer mb-4 transition-colors">
                             <FaPhoneAlt className="h-4 w-4" />
-                            <span>+1-800-SPORTS</span>
+                            <span>+91 93164 02819</span>
                         </div>
                     </div>
                 </div>

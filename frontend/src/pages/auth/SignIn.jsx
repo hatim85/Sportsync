@@ -6,6 +6,7 @@ import { signInStart, signInSuccess, signInFailure, clearError } from '../../red
 import toast from 'react-hot-toast';
 import { signInWithPopup } from 'firebase/auth';
 import { auth, googleProvider } from '../../firebase.js';
+import { AUTH_RING_ASSETS } from '../../constants/authRingAssets.js';
 
 function SignIn() {
     const dispatch = useDispatch();
@@ -20,14 +21,7 @@ function SignIn() {
 
     // Circular Stepped Animation State
     const [ringIndex, setRingIndex] = useState(0);
-    const ringAssets = [
-        "/SR1.png",
-        "/SR2.png",
-        "/SR3.png",
-        "/SR4.png",
-        "/SR5.png",
-        "/SR6.png",
-    ];
+    const ringAssets = AUTH_RING_ASSETS;
 
     useEffect(() => {
         // Clear any previous auth errors on mount
@@ -160,8 +154,8 @@ function SignIn() {
                                     >
                                         <div className="w-64 h-64 flex items-center justify-center p-4">
                                             <img
-                                                src={img}
-                                                alt={`Equipment ${i}`}
+                                                src={img.src}
+                                                alt={img.alt}
                                                 className="w-full h-full object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.6)] animate-pulse-slow"
                                             />
                                         </div>

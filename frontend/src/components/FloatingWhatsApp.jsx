@@ -22,7 +22,7 @@ const FloatingWhatsApp = () => {
             </div>
             <div className="hidden md:flex flex-col items-start leading-tight">
                 <span className="text-[9px] md:text-[10px] font-bold tracking-[0.2em] uppercase opacity-90">Sportsync</span>
-                <span className="text-[10px] md:text-[11px] font-medium">+91 99245 59125</span>
+                <span className="text-[10px] md:text-[11px] font-medium">+91 93164 02819</span>
             </div>
         </a>
     );

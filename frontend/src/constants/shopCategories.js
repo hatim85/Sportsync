@@ -9,8 +9,8 @@ export const FOOTER_SHOP_CATEGORIES = [
 ];
 
 export const SPORTSYNC_CONTACT = {
-  email: 'sportsync025@gmail.com',
-  phone: '+91 99245 59125',
-  phoneWa: '919924559125',
+  email: 'sportsync98@gmail.com',
+  phone: '+91 93164 02819',
+  phoneWa: '919316402819',
   city: 'Ahmedabad, India',
 };
