@@ -184,6 +184,15 @@ input[type=number]::-webkit-outer-spin-button {
   animation-delay: 0.2s;
 }
 
+@keyframes pulse-slow {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 3s ease-in-out infinite;
+}
+
 /* Custom Horizontal Scrollbar for Size Picker */
 .custom-scrollbar::-webkit-scrollbar {
   height: 6px;

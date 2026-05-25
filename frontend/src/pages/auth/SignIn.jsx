@@ -6,7 +6,7 @@ import { signInStart, signInSuccess, signInFailure, clearError } from '../../red
 import toast from 'react-hot-toast';
 import { signInWithPopup } from 'firebase/auth';
 import { auth, googleProvider } from '../../firebase.js';
-import { AUTH_RING_ASSETS } from '../../constants/authRingAssets.js';
+import AuthModalVisual from '../../components/AuthModalVisual.jsx';
 
 function SignIn() {
     const dispatch = useDispatch();
@@ -19,19 +19,9 @@ function SignIn() {
     const [showPassword, setShowPassword] = useState(false);
     const { loading, error: errorMessage } = useSelector(state => state.user);
 
-    // Circular Stepped Animation State
-    const [ringIndex, setRingIndex] = useState(0);
-    const ringAssets = AUTH_RING_ASSETS;
-
     useEffect(() => {
-        // Clear any previous auth errors on mount
         dispatch(clearError());
-        
-        const interval = setInterval(() => {
-            setRingIndex((prev) => (prev + 1) % ringAssets.length);
-        }, 5000); // Wait 5 seconds then step
-        return () => clearInterval(interval);
-    }, [ringAssets.length, dispatch]);
+    }, [dispatch]);
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.id]: e.target.value.trim() })
@@ -109,65 +99,17 @@ function SignIn() {
 
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 overflow-hidden uppercase">
-            <div className="relative w-full max-w-5xl h-[min(90vh,750px)] bg-card rounded-lg shadow-2xl flex overflow-hidden">
+            <div className="relative w-full max-w-6xl h-[min(92vh,800px)] bg-card rounded-lg shadow-2xl flex overflow-hidden">
 
                 {/* Close Button */}
                 <Link to="/" className="absolute top-6 right-6 z-50 text-muted-foreground hover:text-foreground transition-colors bg-white/80 backdrop-blur-sm p-2 rounded-full shadow-sm">
                     <FaTimes className="h-5 w-5" />
                 </Link>
 
-                {/* Left Section: White Background with Right-Bulging Black Circle */}
-                <div className="hidden lg:flex relative w-[45%] h-full bg-card overflow-hidden group">
-                    {/* Main White Background */}
-                    <div className="absolute inset-0 bg-card"></div>
-
-                    {/* Large Black Circle bulging RIGHT into the white area */}
-                    <div className="absolute top-1/2 right-[100%] -translate-y-1/2 translate-x-[45%] w-[180%] aspect-square bg-[#1b1b1b] rounded-full"></div>
-
-                    {/* Circular Gallery Area */}
-                    <div className="absolute inset-0 flex items-center justify-start pl-10 pointer-events-none">
-                        <div className="relative flex items-center justify-center">
-                            {ringAssets.map((img, i) => {
-                                let diff = i - ringIndex;
-                                if (diff > 3) diff -= ringAssets.length;
-                                if (diff < -2) diff += ringAssets.length;
-
-                                // Circular path matching the right-bulging arc
-                                const radius = 520;
-                                const theta = (diff * 21) * (Math.PI / 125); // ~30 degrees per ring step
-                                const ty = -radius * Math.sin(theta);
-                                // Bulge RIGHT (Center is right of ends)
-                                const tx = -(radius - radius * Math.cos(theta)) + 320;
-
-                                // Only show 3 rings at a time to prevent wrap-around slides
-                                const isVisible = Math.abs(diff) <= 1;
-
-                                return (
-                                    <div
-                                        key={i}
-                                        className={`absolute transition-all duration-[1500ms] ease-in-out ${isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}
-                                        style={{
-                                            transform: `translate(${tx}px, ${ty}px) scale(${diff === 0 ? 1.4 : Math.abs(diff) === 1 ? 0.8 : 0.55})`,
-                                            zIndex: 10 - Math.abs(diff),
-                                            filter: `blur(${Math.abs(diff) * 2}px) brightness(${1 - Math.abs(diff) * 0.4})`
-                                        }}
-                                    >
-                                        <div className="w-64 h-64 flex items-center justify-center p-4">
-                                            <img
-                                                src={img.src}
-                                                alt={img.alt}
-                                                className="w-full h-full object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.6)] animate-pulse-slow"
-                                            />
-                                        </div>
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    </div>
-                </div>
+                <AuthModalVisual />
 
                 {/* Right Section: Form */}
-                <div className="w-full lg:w-[55%] h-full flex flex-col items-center justify-center p-8 md:p-16 overflow-y-auto bg-card">
+                <div className="w-full lg:w-[52%] h-full flex flex-col items-center justify-center p-8 md:p-14 overflow-y-auto bg-card">
                     <div className="w-full max-w-sm space-y-10">
                         {/* Logo & Header */}
                         <div className="text-center space-y-4">
@@ -279,16 +221,6 @@ function SignIn() {
                     </div>
                 </div>
             </div>
-            <style dangerouslySetInnerHTML={{
-                __html: `
-                @keyframes pulse-slow {
-                    0%, 100% { transform: scale(1); }
-                    50% { transform: scale(1.05); }
-                }
-                .animate-pulse-slow {
-                    animation: pulse-slow 3s ease-in-out infinite;
-                }
-            `}} />
         </div>
     )
 }

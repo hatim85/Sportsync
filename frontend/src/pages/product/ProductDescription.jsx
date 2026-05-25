@@ -435,17 +435,15 @@ function ProductDescription() {
 
             <div className="max-w-7xl mx-auto px-4 pb-8">
                 <ProductReviews
-                    reviews={product?.reviews || []}
+                    productId={product?._id}
                     rating={product?.rating}
                     reviewsCount={product?.reviewsCount}
                     userCanReview={product?.userCanReview}
                     eligibleOrderId={product?.eligibleOrderId}
-                    productId={product?._id}
                     userId={currentUser?._id}
                     onReviewSubmitted={(data) => {
                         setProduct((prev) => ({
                             ...prev,
-                            reviews: [data.review, ...(prev?.reviews || [])],
                             rating: data.rating,
                             reviewsCount: data.reviewsCount,
                             userCanReview: false,
@@ -455,31 +453,42 @@ function ProductDescription() {
             </div>
 
             {/* You May Also Like Section */}
-            <section className="max-w-7xl mx-auto px-4 py-24">
-                <div className="text-center space-y-12">
-                    <h2 className="text-2xl font-medium tracking-tight text-foreground font-sans">You May Also Like</h2>
-                    
-                    {/* Tabs */}
-                    <div className="flex justify-center space-x-12 border-b border-border pb-1 overflow-x-auto no-scrollbar">
+            <section className="max-w-7xl mx-auto px-4 py-24 min-w-0">
+                <div className="space-y-12 min-w-0 w-full">
+                    <h2 className="text-2xl font-medium tracking-tight text-foreground font-sans text-center">
+                        You May Also Like
+                    </h2>
+
+                    {/* Tabs — full-bleed scroll on mobile; avoid overflow-x-hidden clipping first label */}
+                    <div className="w-full min-w-0 -mx-4 sm:mx-0">
+                        <div
+                            className="flex w-full min-w-0 max-w-[100vw] sm:max-w-none items-center justify-start gap-6 sm:gap-8 border-b border-border pb-1 overflow-x-auto overscroll-x-contain scroll-smooth scroll-pl-6 scroll-pr-6 pl-6 pr-6 sm:pl-0 sm:pr-0 sm:scroll-pl-0 sm:scroll-pr-0 md:justify-center md:gap-12 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+                            role="tablist"
+                        >
                         {[
-                            { id: 'recommended', label: 'Recommended' },
-                            { id: 'category', label: product?.categoryName || 'Similar Designs' },
-                            { id: 'classic', label: 'Classic Gear' },
-                            { id: 'more', label: 'More Accessories' }
+                            { id: 'recommended', label: 'Recommended', mobileLabel: 'Recommended' },
+                            { id: 'category', label: product?.categoryName || 'Similar Designs', mobileLabel: product?.categoryName || 'Category' },
+                            { id: 'classic', label: 'Classic Gear', mobileLabel: 'Classic' },
+                            { id: 'more', label: 'More Accessories', mobileLabel: 'Accessories' },
                         ].map((tab) => (
                             <button
                                 key={tab.id}
+                                type="button"
+                                role="tab"
+                                aria-selected={activeTab === tab.id}
                                 onClick={() => {
                                     if (activeTab !== tab.id) setActiveTab(tab.id);
                                 }}
-                                className={`text-[12px] uppercase tracking-[0.2em] font-bold pb-4 transition-all relative ${activeTab === tab.id ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+                                className={`flex-shrink-0 whitespace-nowrap text-[11px] sm:text-[12px] uppercase tracking-wide sm:tracking-[0.2em] font-bold pb-4 px-0.5 transition-all relative ${activeTab === tab.id ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
                             >
-                                {tab.label}
+                                <span className="sm:hidden">{tab.mobileLabel}</span>
+                                <span className="hidden sm:inline">{tab.label}</span>
                                 {activeTab === tab.id && (
-                                    <div className="absolute bottom-0 left-0 w-full h-[2px] bg-primary"></div>
+                                    <div className="absolute bottom-0 left-0 w-full h-[2px] bg-primary" />
                                 )}
                             </button>
                         ))}
+                        </div>
                     </div>
 
                     {/* Product Grid */}

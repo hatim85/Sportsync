@@ -98,11 +98,6 @@ export const getProduct = async (req, res, next) => {
         const makingCharge = await getMakingCharge();
         const priced = applyMakingChargeToProductDoc(product, makingCharge);
 
-        const reviews = await Review.find({ productId: product._id })
-            .sort({ createdAt: -1 })
-            .limit(30)
-            .lean();
-
         let userCanReview = false;
         let eligibleOrderId = null;
         const userId = req.query.userId;
@@ -131,7 +126,6 @@ export const getProduct = async (req, res, next) => {
 
         res.status(200).json({
             ...priced,
-            reviews,
             userCanReview,
             eligibleOrderId,
         });
@@ -395,8 +389,15 @@ export const search = async (req, res) => {
             throw new Error('Invalid search query');
         }
 
+        const page = Math.max(1, parseInt(req.query.page, 10) || 1);
+        const requestedLimit = parseInt(req.query.limit, 10);
+        const pageSize = Number.isFinite(requestedLimit) && requestedLimit > 0
+            ? Math.min(requestedLimit, 500)
+            : 12;
+        const skip = (page - 1) * pageSize;
+
         const sort = req.query.sort;
-        let sortOption = { createdAt: -1 }; // Default to newest
+        let sortOption = { createdAt: -1 };
 
         if (sort === 'price_asc') {
             sortOption = { price: 1 };
@@ -408,22 +409,28 @@ export const search = async (req, res) => {
             sortOption = { createdAt: 1 };
         }
 
-        const results = await Product.find({
+        const filter = {
             $or: [
                 { name: { $regex: query, $options: 'i' } },
-                { description: { $regex: query, $options: 'i' } }
-            ]
-        })
+                { description: { $regex: query, $options: 'i' } },
+            ],
+        };
+
+        const totalProducts = await Product.countDocuments(filter);
+        const results = await Product.find(filter)
             .sort(sortOption)
-            .populate('categoryId'); // This will populate the category details in the results
+            .populate('categoryId')
+            .skip(skip)
+            .limit(pageSize);
+
         const makingCharge = await getMakingCharge();
         const priced = results.map((p) => applyMakingChargeToProductDoc(p, makingCharge));
 
-        res.json(priced);
+        res.status(200).json({ products: priced, totalProducts, page, pageSize });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
-}
+};
 
 export const similarProduct = async (req, res) => {
     req.query.tab = req.query.tab || 'recommended';

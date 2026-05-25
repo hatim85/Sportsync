@@ -20,14 +20,36 @@ export async function recalculateProductRating(productId) {
 export const getProductReviews = async (req, res) => {
   try {
     const { productId } = req.params;
+    const page = Math.max(1, parseInt(req.query.page, 10) || 1);
+    const requestedLimit = parseInt(req.query.limit, 10);
+    const pageSize = Number.isFinite(requestedLimit) && requestedLimit > 0
+      ? Math.min(requestedLimit, 20)
+      : 5;
+    const skip = (page - 1) * pageSize;
+
+    const product = await Product.findById(productId).select('rating reviewsCount');
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+
     const reviews = await Review.find({ productId })
       .sort({ createdAt: -1 })
-      .limit(50)
+      .skip(skip)
+      .limit(pageSize)
       .lean();
 
-    const stats = await recalculateProductRating(productId);
+    const totalReviews = product.reviewsCount ?? 0;
+    const totalPages = Math.max(1, Math.ceil(totalReviews / pageSize));
 
-    res.status(200).json({ reviews, ...stats });
+    res.status(200).json({
+      reviews,
+      rating: product.rating ?? 0,
+      reviewsCount: totalReviews,
+      totalReviews,
+      page,
+      pageSize,
+      totalPages,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
