@@ -54,14 +54,14 @@ function Header() {
         { name: 'Running', path: '/category/running' },
         { name: 'Indoor Sports', path: '/category/indoor-sports' },
         { name: 'Accessories', path: '/category/accessories' },
-        { name: 'Team & Academy Orders', path: '/category/team-academy' },
+        { name: 'Team & Academy Orders', short: 'Team & Academy', path: '/category/team-academy' },
         { name: 'Sale', path: '/category/sale' },
-        { name: 'New Arrivals', path: '/category/new-arrivals' }
+        { name: 'New Arrivals', path: '/category/new-arrivals' },
     ];
 
 
     return (
-        <header className="w-full bg-background sticky top-0 z-50 border-b border-border shadow-sm">
+        <header className="w-full max-w-[100vw] bg-background sticky top-0 z-50 border-b border-border shadow-sm overflow-x-hidden">
             {/* Top Banner - Sporty */}
             <div className="w-full bg-primary text-primary-foreground py-1.5 text-center text-[10px] md:text-xs font-bold tracking-[0.2em] px-4 uppercase">
                 Free Shipping on Orders Over ₹499 | Pro Gear Available
@@ -195,20 +195,26 @@ function Header() {
                 </div>
             )}
 
-            {/* Bottom Nav Row (Desktop Only) */}
+            {/* Category nav — horizontal scroll when links overflow (production-safe) */}
             <nav className="hidden lg:block w-full border-t border-border bg-secondary/50">
-                <ul className="container mx-auto px-4 flex justify-center space-x-6 lg:space-x-12 py-3 lg:py-4 text-[11px] lg:text-sm font-black tracking-[0.1em] text-foreground">
-                    {navLinks.map((link) => (
-                        <li key={link.name}>
-                            <Link
-                                to={link.path}
-                                className="hover:text-primary hover:border-b-2 hover:border-primary transition-all pb-1 uppercase whitespace-nowrap"
-                            >
-                                {link.name}
-                            </Link>
-                        </li>
-                    ))}
-                </ul>
+                <div
+                    className="overflow-x-auto overscroll-x-contain scroll-smooth [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+                    aria-label="Shop categories"
+                >
+                    <ul className="flex items-center gap-4 xl:gap-8 2xl:gap-10 py-3 lg:py-3.5 px-6 xl:px-8 w-max min-w-full justify-center text-[10px] xl:text-[11px] 2xl:text-xs font-black tracking-[0.08em] xl:tracking-[0.1em] text-foreground">
+                        {navLinks.map((link) => (
+                            <li key={link.path} className="flex-shrink-0">
+                                <Link
+                                    to={link.path}
+                                    className="block hover:text-primary hover:border-b-2 hover:border-primary transition-all pb-1 uppercase whitespace-nowrap"
+                                >
+                                    <span className="2xl:hidden">{link.short || link.name}</span>
+                                    <span className="hidden 2xl:inline">{link.name}</span>
+                                </Link>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
             </nav>
 
             {/* Mobile Drawer */}
