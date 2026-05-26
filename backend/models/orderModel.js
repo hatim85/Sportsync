@@ -21,10 +21,7 @@ const orderSchema = mongoose.Schema({
             required: true
         },
         size: { type: String },
-        metalType: { type: String },
-        engraving: { type: String },
-        stone: { type: String },
-        finish: { type: String }
+        color: { type: String },
     }],
     totalAmount: {
         type: Number,

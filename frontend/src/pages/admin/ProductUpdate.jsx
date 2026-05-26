@@ -60,7 +60,7 @@ function ProductUpdate() {
         setForm({
           name: data?.name || '',
           description: data?.description || '',
-          price: String(data?.basePrice ?? data?.price ?? ''),
+          price: String(data?.price ?? ''),
           stock: String(data?.stock ?? ''),
           categoryId: data?.categoryId?.name || data?.categoryName || '',
           coverImageIndex: Number(data?.coverImageIndex ?? 0)

@@ -211,7 +211,6 @@ export const updateimg=async(req,res)=>{
         res.json(error.message)
     }
 }
-
 export const getzeroindeximg = async (req, res) => {
     try {
       const categories = await Category.find({}, { _id: 1, image: { $slice: 1 } }); // Only retrieve the first image and category ID
@@ -282,3 +281,4 @@ export const getzeroindeximg = async (req, res) => {
 //         next(err);
 //     }
 // }
+

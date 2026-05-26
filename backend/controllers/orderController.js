@@ -1,7 +1,6 @@
 import Order from "../models/orderModel.js";
 import Product from "../models/productModel.js";
 import Review from "../models/reviewModel.js";
-import { getMakingCharge } from "../utils/pricing.js";
 import {
     getExpectedDeliveryDate,
     applyOrderLifecycle,
@@ -32,24 +31,18 @@ export const createOrder = async (req, res) => {
     try {
         const userId = req.user.id;
         const { products, paymentMethod, status, totalAmount, address } = req.body;
-        const makingCharge = await getMakingCharge();
-
         const productIds = products.map(p => p.productId);
         const dbProducts = await Product.find({ _id: { $in: productIds } }).select("_id price").lean();
         const priceMap = new Map(dbProducts.map(p => [String(p._id), Number(p.price || 0)]));
 
         const orderLines = products.map(p => {
-            const basePrice = priceMap.get(String(p.productId)) ?? 0;
-            const unitPriceAtPurchase = basePrice + makingCharge;
+            const unitPriceAtPurchase = priceMap.get(String(p.productId)) ?? 0;
             return {
                 productId: p.productId,
                 quantity: p.quantity,
                 unitPriceAtPurchase,
                 size: p.size,
-                metalType: p.metalType,
-                engraving: p.engraving,
-                stone: p.stone,
-                finish: p.finish
+                color: p.color,
             };
         });
 

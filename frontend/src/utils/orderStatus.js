@@ -1,5 +1,8 @@
 export const ORDER_DELIVERY_HOURS = 24;
 
+/** Hours after return approval before pickup is scheduled (matches backend lifecycle) */
+export const RETURN_PICKUP_AFTER_APPROVAL_HOURS = 4;
+
 export const STATUS_LABELS = {
   payment_pending: 'Payment Pending',
   pending: 'Pending',
@@ -99,4 +102,34 @@ export function formatDeliveredOn(dateStr) {
   if (!dateStr) return null;
   const d = new Date(dateStr);
   return d.toLocaleDateString('en-IN', deliveryDateOnlyFormat);
+}
+
+/**
+ * Pickup date for return_pickup_scheduled orders.
+ * Uses returnPickupScheduledAt when set; otherwise estimates from returnApprovedAt.
+ */
+export function getReturnPickupDateInfo(order) {
+  if (order?.status !== 'return_pickup_scheduled') return null;
+
+  if (order.returnPickupScheduledAt) {
+    return {
+      label: 'Pickup scheduled for',
+      formatted: formatCustomerDeliveryDate(order.returnPickupScheduledAt),
+      isEstimate: false,
+    };
+  }
+
+  if (order.returnApprovedAt) {
+    const estimated = new Date(order.returnApprovedAt);
+    estimated.setTime(
+      estimated.getTime() + RETURN_PICKUP_AFTER_APPROVAL_HOURS * 60 * 60 * 1000
+    );
+    return {
+      label: 'Estimated pickup by',
+      formatted: formatCustomerDeliveryDate(estimated.toISOString()),
+      isEstimate: true,
+    };
+  }
+
+  return null;
 }

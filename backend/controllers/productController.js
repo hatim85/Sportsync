@@ -5,7 +5,7 @@ import Category from '../models/categoryModel.js';
 import Review from '../models/reviewModel.js';
 import Order from '../models/orderModel.js';
 import { errorHandler } from '../utils/error.js';
-import { getMakingCharge, applyMakingChargeToProductDoc } from "../utils/pricing.js";
+import { formatProductDoc } from "../utils/pricing.js";
 import mongoose from 'mongoose';
 import fs from 'fs';
 import path from 'path';
@@ -77,8 +77,7 @@ export const getProducts = async (req, res, next) => {
             .skip(skip)
             .limit(pageSize);
         
-        const makingCharge = await getMakingCharge();
-        const response = products.map(p => applyMakingChargeToProductDoc(p, makingCharge));
+        const response = products.map(p => formatProductDoc(p));
         res.status(200).json({ products: response, totalProducts });
     } catch (err) {
         next(err);
@@ -95,8 +94,7 @@ export const getProduct = async (req, res, next) => {
 
         // const category = product.categoryName;
 
-        const makingCharge = await getMakingCharge();
-        const priced = applyMakingChargeToProductDoc(product, makingCharge);
+        const priced = formatProductDoc(product);
 
         let userCanReview = false;
         let eligibleOrderId = null;
@@ -373,8 +371,7 @@ export const getProductsByCategory = async (req, res) => {
             .sort(sortOption)
             .populate('categoryId', 'name')
             .exec();
-        const makingCharge = await getMakingCharge();
-        const priced = products.map(p => applyMakingChargeToProductDoc(p, makingCharge));
+        const priced = products.map(p => formatProductDoc(p));
         res.json({ success: true, products: priced });
     } catch (error) {
         console.error('Error fetching products by category:', error);
@@ -423,8 +420,7 @@ export const search = async (req, res) => {
             .skip(skip)
             .limit(pageSize);
 
-        const makingCharge = await getMakingCharge();
-        const priced = results.map((p) => applyMakingChargeToProductDoc(p, makingCharge));
+        const priced = results.map((p) => formatProductDoc(p));
 
         res.status(200).json({ products: priced, totalProducts, page, pageSize });
     } catch (err) {
@@ -487,8 +483,7 @@ export const getRelatedByTab = async (req, res) => {
             .limit(12)
             .populate('categoryId', 'name');
 
-        const makingCharge = await getMakingCharge();
-        const priced = products.map((p) => applyMakingChargeToProductDoc(p, makingCharge));
+        const priced = products.map((p) => formatProductDoc(p));
         res.json(priced);
     } catch (err) {
         console.error(err.message);
@@ -522,7 +517,6 @@ export const updateImages = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
-
 export const validate = (method) => {
     switch (method) {
         case 'createProduct': {

@@ -184,6 +184,11 @@ function Cart() {
                                                                     Size: {item.size}
                                                                 </span>
                                                             )}
+                                                            {item.color && (
+                                                                <span className="text-xs text-muted-foreground uppercase tracking-widest font-bold">
+                                                                    Color: {item.color}
+                                                                </span>
+                                                            )}
                                                         </div>
                                                     </h2>
                                                     <button 

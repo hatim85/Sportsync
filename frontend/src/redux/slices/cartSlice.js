@@ -11,19 +11,14 @@ const cartSlice = createSlice({
     initialState,
     reducers: {
         addToCartGuest(state, action) {
-            const { product, size, metalType, color, customisation } = action.payload;
-            const { engraving, stone, finish } = customisation || {};
-            const variantColor = color ?? metalType;
-            
-            const existingItemIndex = state.cartItems.findIndex(item => 
-                item.product?._id === product?._id && 
+            const { product, size, color } = action.payload;
+
+            const existingItemIndex = state.cartItems.findIndex(item =>
+                item.product?._id === product?._id &&
                 (item.size === size || (!item.size && !size)) &&
-                (item.color === variantColor || item.metalType === variantColor || (!item.color && !item.metalType && !variantColor)) &&
-                (item.engraving === engraving || (!item.engraving && !engraving)) &&
-                (item.stone === stone || (!item.stone && !stone)) &&
-                (item.finish === finish || (!item.finish && !finish))
+                (item.color === color || (!item.color && !color))
             );
-            
+
             if (existingItemIndex !== -1) {
                 state.cartItems[existingItemIndex].quantity += 1;
             } else {
@@ -31,11 +26,7 @@ const cartSlice = createSlice({
                     cartItemId: `guest-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
                     product,
                     size,
-                    color: variantColor,
-                    metalType: variantColor,
-                    engraving,
-                    stone,
-                    finish,
+                    color,
                     quantity: 1,
                     isGuest: true
                 });

@@ -14,5 +14,4 @@ router.get('/search/:q', search);
 router.get('/related/:productId', getRelatedByTab)
 router.get('/similar/:productId', similarProduct)
 router.put('/updateimg/:productId', upload.array('images', 4), updateImages)
-
 export default router

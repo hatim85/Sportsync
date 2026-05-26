@@ -237,32 +237,7 @@ function Order() {
                                     <p className="text-sm font-semibold text-foreground">{item.productId?.name}</p>
                                     <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-[10px] uppercase tracking-widest font-bold text-muted-foreground">
                                        {item.size && <span>Size: {item.size}</span>}
-                                       {item.metalType && (
-                                         <span>
-                                           Metal: {
-                                             item.metalType === 'SS' ? '925 Silver' :
-                                             item.metalType === 'RS' ? 'Rose Silver' :
-                                             item.metalType === 'YS' ? 'Yellow Silver' :
-                                             item.metalType
-                                           }
-                                         </span>
-                                       )}
-                                       {item.engraving && <span className="text-blue-600 bg-blue-50 px-2 rounded-sm border border-blue-100 italic font-serif">"{item.engraving}"</span>}
-                                       {item.stone && (
-                                         <span className={`px-2 rounded-sm border whitespace-nowrap ${
-                                           item.stone.toLowerCase().includes('ruby') ? 'text-red-600 bg-red-50 border-red-100' :
-                                           item.stone.toLowerCase().includes('emerald') ? 'text-emerald-600 bg-emerald-50 border-emerald-100' :
-                                           item.stone.toLowerCase().includes('sapphire') && !item.stone.toLowerCase().includes('pink') ? 'text-blue-600 bg-blue-50 border-blue-100' :
-                                           item.stone.toLowerCase().includes('citrine') ? 'text-amber-600 bg-amber-50 border-amber-100' :
-                                           item.stone.toLowerCase().includes('amethyst') ? 'text-purple-600 bg-purple-50 border-purple-100' :
-                                           item.stone.toLowerCase().includes('pink') ? 'text-pink-600 bg-pink-50 border-pink-100' :
-                                           item.stone.toLowerCase().includes('black') ? 'text-foreground bg-secondary border-border' :
-                                           'text-muted-foreground bg-secondary border-border'
-                                         }`}>
-                                           {item.stone}
-                                         </span>
-                                       )}
-                                       {item.finish && <span className="text-amber-600 bg-amber-50 px-2 rounded-sm border border-amber-100 whitespace-nowrap">{item.finish}</span>}
+                                       {item.color && <span>Color: {item.color}</span>}
                                     </div>
                                     <p className="text-xs text-muted-foreground">Quantity: <span className="font-bold text-foreground">{item.quantity}</span></p>
                                     <p className="text-xs text-muted-foreground">Unit Price: <span className="font-bold text-foreground">₹{item.unitPriceAtPurchase}</span></p>

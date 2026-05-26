@@ -35,6 +35,7 @@ import {
   canCancelReturn,
   shouldShowDeliveryEstimate,
   formatDeliveredOn,
+  getReturnPickupDateInfo,
 } from '../../utils/orderStatus.js';
 import Header from '../../components/Header.jsx';
 import ReturnRequestModal from '../../components/ReturnRequestModal.jsx';
@@ -384,7 +385,9 @@ function Profile() {
                   <p className={`${ui.body} text-center py-20 uppercase tracking-[0.15em] font-black text-[10px]`}>Loading history...</p>
                 ) : orders && orders.length > 0 ? (
                   <div className="space-y-6">
-                    {orders.map((order) => (
+                    {orders.map((order) => {
+                      const pickupInfo = getReturnPickupDateInfo(order);
+                      return (
                       <div key={order._id} className="border border-border bg-secondary/30 p-6 rounded-lg space-y-6">
                         <div className="flex flex-col md:flex-row justify-between pb-4 border-b border-border gap-4">
                           <div className="space-y-1">
@@ -415,6 +418,11 @@ function Profile() {
                                 {STATUS_LABELS[order.status] || order.status}
                               </span>
                             </p>
+                            {pickupInfo && (
+                              <p className={`${ui.bodyStrong} mt-2 text-orange-700`}>
+                                {pickupInfo.label} {pickupInfo.formatted}
+                              </p>
+                            )}
                             {order.refundNote && (
                               <p className="text-[11px] text-emerald-700 mt-2 font-bold">{order.refundNote}</p>
                             )}
@@ -456,32 +464,7 @@ function Profile() {
                                   <p className={ui.bodyStrong}>{item.productId?.name || 'Product'}</p>
                                   <div className={`flex flex-wrap gap-x-3 gap-y-0.5 ${ui.actionBtn} text-muted-foreground`}>
                                     {item.size && <span>Size: {item.size}</span>}
-                                    {item.metalType && (
-                                      <span>
-                                        Metal: {
-                                          item.metalType === 'SS' ? '925 Silver' :
-                                            item.metalType === 'RS' ? 'Rose Silver' :
-                                              item.metalType === 'YS' ? 'Yellow Silver' :
-                                                item.metalType
-                                        }
-                                      </span>
-                                    )}
-                                    {item.engraving && <span className="text-blue-600 bg-blue-50 px-2 rounded-sm border border-blue-100">"{item.engraving}"</span>}
-                                    {item.stone && (
-                                      <span className={`px-2 rounded-sm border whitespace-nowrap ${
-                                        item.stone.toLowerCase().includes('ruby') ? 'text-red-600 bg-red-50 border-red-100' :
-                                        item.stone.toLowerCase().includes('emerald') ? 'text-emerald-600 bg-emerald-50 border-emerald-100' :
-                                        item.stone.toLowerCase().includes('sapphire') && !item.stone.toLowerCase().includes('pink') ? 'text-blue-600 bg-blue-50 border-blue-100' :
-                                        item.stone.toLowerCase().includes('citrine') ? 'text-amber-600 bg-amber-50 border-amber-100' :
-                                        item.stone.toLowerCase().includes('amethyst') ? 'text-purple-600 bg-purple-50 border-purple-100' :
-                                        item.stone.toLowerCase().includes('pink') ? 'text-pink-600 bg-pink-50 border-pink-100' :
-                                        item.stone.toLowerCase().includes('black') ? 'text-foreground bg-secondary border-border' :
-                                        'text-muted-foreground bg-secondary border-border'
-                                      }`}>
-                                        {item.stone}
-                                      </span>
-                                    )}
-                                    {item.finish && <span className="text-amber-600 bg-amber-50 px-2 rounded-sm border border-amber-100 whitespace-nowrap">{item.finish}</span>}
+                                    {item.color && <span>Color: {item.color}</span>}
                                   </div>
                                   <p className={ui.body}>Qty: {item.quantity} × ₹{item.unitPriceAtPurchase}</p>
                                   {order.status === 'delivered' &&
@@ -522,7 +505,8 @@ function Profile() {
                           })}
                         </div>
                       </div>
-                    ))}
+                    );
+                    })}
                   </div>
                 ) : (
                   <div className="py-20 text-center border border-border border-dashed rounded-sm">

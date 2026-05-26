@@ -87,10 +87,7 @@ function Checkout() {
                 productId: item.product._id,
                 quantity: item.quantity,
                 size: item.size,
-                metalType: item.metalType,
-                engraving: item.engraving,
-                stone: item.stone,
-                finish: item.finish
+                color: item.color,
             }));
             const cartItemsToDelete = cartItems.map(cartItem => cartItem.cartItemId);
 
@@ -296,7 +293,9 @@ function Checkout() {
                                         <div className="flex-1 flex flex-col justify-center">
                                             <h3 className="text-xs md:text-sm font-black text-card-foreground uppercase tracking-widest line-clamp-1">{item.product?.name}</h3>
                                             <p className="text-[10px] text-muted-foreground font-bold mt-1 uppercase tracking-wider">
-                                                Qty: {item.quantity} | Size: {item.size}
+                                                Qty: {item.quantity}
+                                                {item.size ? ` | Size: ${item.size}` : ''}
+                                                {item.color ? ` | Color: ${item.color}` : ''}
                                             </p>
                                             <p className="text-xs md:text-sm font-black text-foreground mt-2">₹{Number(item.product?.price).toLocaleString()}</p>
                                         </div>

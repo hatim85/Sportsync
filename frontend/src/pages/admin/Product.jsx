@@ -22,10 +22,9 @@ function Product() {
 
     const [selectedCategoryId, setSelectedCategoryId] = useState('');
 
-    const [makingCharge, setMakingCharge] = useState('');
     const [deliveryCharge, setDeliveryCharge] = useState('');
-    const [makingChargeLoading, setMakingChargeLoading] = useState(false);
-    const [makingChargeSaving, setMakingChargeSaving] = useState(false);
+    const [pricingLoading, setPricingLoading] = useState(false);
+    const [pricingSaving, setPricingSaving] = useState(false);
 
     const [formData, setFormData] = useState({
         name: '',
@@ -48,7 +47,7 @@ function Product() {
     }, [currentPage, selectedCategoryId]);
 
     useEffect(() => {
-        fetchMakingCharge();
+        fetchDeliveryCharge();
     }, []);
 
     // Remove incorrect totalProducts calculation from local array length
@@ -93,8 +92,8 @@ function Product() {
         }
     };
 
-    const fetchMakingCharge = async () => {
-        setMakingChargeLoading(true);
+    const fetchDeliveryCharge = async () => {
+        setPricingLoading(true);
         try {
             const res = await fetch(`${import.meta.env.VITE_PORT}/api/settings/pricing`, {
                 method: 'GET',
@@ -102,46 +101,14 @@ function Product() {
             });
             if (!res.ok) {
                 const data = await res.json().catch(() => ({}));
-                throw new Error(data.message || 'Failed to load pricing settings');
+                throw new Error(data.message || 'Failed to load delivery charge');
             }
             const data = await res.json();
-            setMakingCharge(String(data?.makingCharge ?? 0));
             setDeliveryCharge(String(data?.deliveryCharge ?? 0));
         } catch (err) {
             toast.error(err.message);
         } finally {
-            setMakingChargeLoading(false);
-        }
-    };
-
-    const handleSaveMakingCharge = async (e) => {
-        e.preventDefault();
-        const value = Number(makingCharge);
-        if (Number.isNaN(value) || value < 0) {
-            toast.error('Making charge must be a number >= 0');
-            return;
-        }
-
-        setMakingChargeSaving(true);
-        try {
-            const res = await fetch(`${import.meta.env.VITE_PORT}/api/settings/pricing`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ makingCharge: value, deliveryCharge: Number(deliveryCharge) || 0 })
-            });
-            if (!res.ok) {
-                const data = await res.json().catch(() => ({}));
-                throw new Error(data.message || 'Failed to update making charge');
-            }
-            const data = await res.json();
-            setMakingCharge(String(data?.makingCharge ?? value));
-            setDeliveryCharge(String(data?.deliveryCharge ?? deliveryCharge));
-            toast.success('Making charge updated');
-            fetchProducts(currentPage);
-        } catch (err) {
-            toast.error(err.message);
-        } finally {
-            setMakingChargeSaving(false);
+            setPricingLoading(false);
         }
     };
 
@@ -153,26 +120,24 @@ function Product() {
             return;
         }
 
-        setMakingChargeSaving(true);
+        setPricingSaving(true);
         try {
             const res = await fetch(`${import.meta.env.VITE_PORT}/api/settings/pricing`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ makingCharge: Number(makingCharge) || 0, deliveryCharge: value })
+                body: JSON.stringify({ deliveryCharge: value })
             });
             if (!res.ok) {
                 const data = await res.json().catch(() => ({}));
                 throw new Error(data.message || 'Failed to update delivery charge');
             }
             const data = await res.json();
-            setMakingCharge(String(data?.makingCharge ?? makingCharge));
             setDeliveryCharge(String(data?.deliveryCharge ?? value));
             toast.success('Delivery charge updated');
-            fetchProducts(currentPage);
         } catch (err) {
             toast.error(err.message);
         } finally {
-            setMakingChargeSaving(false);
+            setPricingSaving(false);
         }
     };
 
@@ -316,56 +281,33 @@ function Product() {
 
     return (
         <div className="space-y-6">
-            {/* <div className="bg-card p-4 rounded shadow space-y-4">
-                <h2 className="text-lg font-semibold">Pricing Settings</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label className="block text-sm font-medium mb-1">Making/Labour Charge (₹)</label>
-                        <input
-                            name="makingCharge"
-                            type="number"
-                            min="0"
-                            value={makingCharge}
-                            onChange={(e) => setMakingCharge(e.target.value)}
-                            placeholder="0"
-                            className="border rounded p-2 w-full"
-                            disabled={makingChargeLoading || makingChargeSaving}
-                        />
-                        <button
-                            formNoValidate
-                            onClick={handleSaveMakingCharge}
-                            className="mt-2 bg-primary text-primary-foreground px-4 py-2 rounded-sm text-[10px] font-bold uppercase tracking-widest hover:bg-primary transition-colors"
-                            disabled={makingChargeLoading || makingChargeSaving}
-                        >
-                            {makingChargeSaving ? 'Saving...' : 'Update Making Charge'}
-                        </button>
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium mb-1">Delivery Charge (₹)</label>
-                        <input
-                            name="deliveryCharge"
-                            type="number"
-                            min="0"
-                            value={deliveryCharge}
-                            onChange={(e) => setDeliveryCharge(e.target.value)}
-                            placeholder="0"
-                            className="border rounded p-2 w-full"
-                            disabled={makingChargeLoading || makingChargeSaving}
-                        />
-                        <button
-                            formNoValidate
-                            onClick={handleSaveDeliveryCharge}
-                            className="mt-2 bg-primary text-primary-foreground px-4 py-2 rounded-sm text-[10px] font-bold uppercase tracking-widest hover:bg-primary transition-colors"
-                            disabled={makingChargeLoading || makingChargeSaving}
-                        >
-                            {makingChargeSaving ? 'Saving...' : 'Update Delivery Charge'}
-                        </button>
-                    </div>
+            <div className="bg-card p-4 rounded shadow space-y-4">
+                <h2 className="text-lg font-semibold">Delivery charge</h2>
+                <div className="max-w-xs">
+                    <label className="block text-sm font-medium mb-1">Delivery charge (₹)</label>
+                    <input
+                        name="deliveryCharge"
+                        type="number"
+                        min="0"
+                        value={deliveryCharge}
+                        onChange={(e) => setDeliveryCharge(e.target.value)}
+                        placeholder="0"
+                        className="border rounded p-2 w-full"
+                        disabled={pricingLoading || pricingSaving}
+                    />
+                    <button
+                        type="button"
+                        onClick={handleSaveDeliveryCharge}
+                        className="mt-2 bg-primary text-primary-foreground px-4 py-2 rounded-sm text-[10px] font-bold uppercase tracking-widest hover:bg-primary transition-colors"
+                        disabled={pricingLoading || pricingSaving}
+                    >
+                        {pricingSaving ? 'Saving...' : 'Update delivery charge'}
+                    </button>
                 </div>
-                <div className="text-sm text-muted-foreground">
-                    Current: Making ₹{Number(makingCharge || 0)} | Delivery ₹{Number(deliveryCharge || 0)} {Number(deliveryCharge || 0) === 0 ? '(FREE)' : ''}
-                </div>
-            </div> */}
+                <p className="text-sm text-muted-foreground">
+                    Current: ₹{Number(deliveryCharge || 0)}{Number(deliveryCharge || 0) === 0 ? ' (FREE)' : ''} — orders under ₹499 use this fee at checkout.
+                </p>
+            </div>
 
             <form onSubmit={handleCreate} className="bg-card p-4 rounded shadow space-y-4">
                 <h2 className="text-lg font-semibold">Create Product</h2>
@@ -514,7 +456,7 @@ function Product() {
                                {truncateText(product.description, 60)}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                                {product.basePrice ?? product.price}
+                                {product.price}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                                 {(() => {

@@ -1,7 +1,7 @@
 import User from "../models/userModel.js";
 import Product from '../models/productModel.js';
 import { errorHandler } from "../utils/error.js";
-import { getMakingCharge, applyMakingChargeToProductDoc } from "../utils/pricing.js";
+import { formatProductDoc } from "../utils/pricing.js";
 
 export const addToWishlist = async (req, res, next) => {
     const { productId, userId } = req.body;
@@ -52,8 +52,7 @@ export const getWishlist = async (req, res, next) => {
             return next(errorHandler(404, "User not found"));
         }
 
-        const makingCharge = await getMakingCharge();
-        const wishlistProducts = user.wishlist.map(p => applyMakingChargeToProductDoc(p, makingCharge));
+        const wishlistProducts = user.wishlist.map(p => formatProductDoc(p));
 
         res.status(200).json(wishlistProducts);
     } catch (error) {

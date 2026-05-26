@@ -3,7 +3,7 @@ import Order from '../models/orderModel.js';
 import { instance } from '../index.js';
 import crypto from 'crypto';
 import Product from "../models/productModel.js";
-import { getMakingCharge, getDeliveryCharge } from "../utils/pricing.js";
+import { getDeliveryCharge } from "../utils/pricing.js";
 import { getExpectedDeliveryDate } from "../utils/orderLifecycle.js";
 import { userOwnsOrder } from '../utils/orderAccess.js';
 import { verifyWebhookSignature, processRazorpayWebhook } from '../utils/webhookProcessor.js';
@@ -23,7 +23,6 @@ export const createPayment = async (req, res) => {
     const userId = req.user.id;
     const { products, totalAmount, address } = req.body;
 
-    const makingCharge = await getMakingCharge();
     const deliveryChargeSetting = await getDeliveryCharge();
     const decodedProducts = typeof products === 'string' ? JSON.parse(decodeURIComponent(products)) : products;
     if (!Array.isArray(decodedProducts) || decodedProducts.length === 0) {
@@ -35,17 +34,13 @@ export const createPayment = async (req, res) => {
     const priceMap = new Map(dbProducts.map(p => [String(p._id), Number(p.price || 0)]));
 
     const orderLines = decodedProducts.map(p => {
-      const basePrice = priceMap.get(String(p.productId)) ?? 0;
-      const unitPriceAtPurchase = basePrice + makingCharge;
+      const unitPriceAtPurchase = priceMap.get(String(p.productId)) ?? 0;
       return {
         productId: p.productId,
         quantity: p.quantity,
         unitPriceAtPurchase,
         size: p.size,
-        metalType: p.metalType,
-        engraving: p.engraving,
-        stone: p.stone,
-        finish: p.finish
+        color: p.color,
       };
     });
 

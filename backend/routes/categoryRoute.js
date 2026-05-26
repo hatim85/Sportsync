@@ -13,5 +13,4 @@ router.put('/update/:categoryId',updateCategory);
 router.put('/removeImage/:categoryId',removeCategoryImage);
 router.put('/updateimg/:categoryId',upload.array("files",3),updateimg);
 router.get('/getzeroimg',getzeroindeximg)
-
 export default router
