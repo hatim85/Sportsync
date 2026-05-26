@@ -5,11 +5,10 @@ import productReducer from './slices/productSlice.js'
 import searchReducer from './slices/searchSlice.js'
 import cartReducer from './slices/cartSlice.js'
 import addressReducer from './slices/addressSlice.js'
-import paymentReducer from './slices/paymentSlice.js'
 import orderReducer from './slices/orderSlice.js'
 import wishlistReducer from './slices/wishlistSlice.js'
 import trendingReducer from './slices/trendingSlice.js'
-import { persistReducer, persistStore } from 'redux-persist';
+import { persistReducer } from 'redux-persist';
 import storage from "redux-persist/lib/storage";
 
 const rootReducer = combineReducers({
@@ -19,7 +18,6 @@ const rootReducer = combineReducers({
     cart: cartReducer,
     search: searchReducer,
     address: addressReducer,
-    payment: paymentReducer,
     order: orderReducer,
     wishlist: wishlistReducer,
     trending: trendingReducer,
@@ -39,5 +37,4 @@ export const store = configureStore({
         getDefaultMiddleware({ serializableCheck: false })
 });
 
-export const persistor = persistStore(store);
 export default store;

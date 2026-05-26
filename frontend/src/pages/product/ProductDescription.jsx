@@ -4,7 +4,6 @@ import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import FloatingWhatsApp from '../../components/FloatingWhatsApp';
 import { useDispatch, useSelector } from 'react-redux';
-import { getProductByIdFailure, getProductByIdStart, getProductByIdSuccess } from '../../redux/slices/productSlice';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { 
@@ -92,16 +91,13 @@ function ProductDescription() {
 
     const fetchProduct = async (id) => {
         try {
-            dispatch(getProductByIdStart());
             const uid = currentUser?._id ? `?userId=${currentUser._id}` : '';
             const response = await fetch(`${import.meta.env.VITE_PORT}/api/products/getbyId/${id}${uid}`);
             if (!response.ok) throw new Error('Failed to fetch product');
             const data = await response.json();
-            dispatch(getProductByIdSuccess(data));
             setProduct(data);
             setLoading(false);
-        } catch (error) {
-            dispatch(getProductByIdFailure(error.message));
+        } catch {
             setLoading(false);
         }
     };

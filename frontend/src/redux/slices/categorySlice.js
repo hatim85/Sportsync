@@ -2,7 +2,6 @@ import {createSlice} from '@reduxjs/toolkit'
 
 const initialState={
     categories:[],
-    categoryProducts:null,
     loading:false,
     error:null
 }
@@ -66,19 +65,6 @@ const categorySlice=createSlice({
             state.loading=false;
             state.error=action.payload;
         },
-        getCategoryProductStart:(state,action)=>{
-            state.loading=true;
-            state.error=null
-        },
-        getCategoryProductSuccess:(state,action)=>{
-            state.categoryProducts=action.payload;
-            state.loading=false;
-            state.error=null;
-        },
-        getCategoryProductFailure:(state,action)=>{
-            state.loading=false;
-            state.error=action.payload;
-        }
     }
 })
 
@@ -95,9 +81,6 @@ export const {
     updateCategoryStart,
     updateCategorySuccess,
     updateCategoryFailure,
-    getCategoryProductStart,
-    getCategoryProductSuccess,
-    getCategoryProductFailure
 }=categorySlice.actions
 
 export default categorySlice.reducer;

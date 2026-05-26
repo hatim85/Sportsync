@@ -1,24 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
-import { getProductByIdStart, getProductByIdSuccess } from '../redux/slices/productSlice';
+import React, { useState } from 'react';
 
 function ImageDescription({ images }) {
     const [slideIndex, setSlideIndex] = useState(0);
-    // Filter out any empty strings or nulls to ensure dots are strictly dynamic based on actual images
     const prodimg = (images || []).filter(img => typeof img === 'string' && img.trim() !== '');
     const totalSlides = prodimg.length;
-    const nextSlide = () => {
-        if (!totalSlides) return;
-        setSlideIndex((slideIndex + 1) % totalSlides);
-    };
-
-    const prevSlide = () => {
-        if (!totalSlides) return;
-        setSlideIndex((slideIndex - 1 + totalSlides) % totalSlides);
-    };
-
-
 
     return (
         <div className="relative w-full max-w-[600px] mx-auto group">
@@ -42,8 +27,6 @@ function ImageDescription({ images }) {
                 </div>
             </div>
 
-
-            {/* Dots */}
             {totalSlides > 1 && (
                 <div className="flex justify-center mt-4 gap-2">
                     {prodimg.map((_, index) => (

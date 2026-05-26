@@ -21,7 +21,6 @@ import OnlyAdminPrivateRoute from './components/OnlyAdminPrivateRoute';
 import AddressForm from './pages/AddressForm';
 import PrivateRoute from './components/PrivateRoute';
 import PaymentSuccess from './pages/PaymentSuccess';
-import MyOrders from './pages/MyOrders';
 import NotFound from './pages/NotFound';
 import Wishlist from './pages/Wishlist';
 import OfflineOverlay from './components/OfflineOverlay';
