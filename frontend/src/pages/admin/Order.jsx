@@ -158,7 +158,7 @@ function Order() {
                 console.log('Admin order:', order);
                 return (
                 <div key={order._id} className="bg-card border border-border rounded-sm p-6 mb-6 shadow-sm hover:shadow-md transition-shadow">
-                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 pb-4 border-b border-gray-50">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 pb-4 border-b border-border">
                         <div className="space-y-1">
                             <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Order ID: <span className="text-foreground">{order._id}</span></p>
                             <p className="text-sm font-medium">User: {order.userId?.firstName ? `${order.userId.firstName} ${order.userId.lastName || ''}`.trim() : (order.userId?.username || 'N/A')} ({order.userId?.email || 'N/A'})</p>
@@ -186,6 +186,9 @@ function Order() {
                                         <p className="text-[10px] font-bold tracking-widest text-blue-800"><span className="uppercase">Razorpay Order:</span> <span className="font-mono text-blue-600">{order.razorpay_order_id}</span></p>
                                         {order.paymentId?.razorpay_payment_id && (
                                             <p className="text-[10px] font-bold tracking-widest text-blue-800"><span className="uppercase">Razorpay Payment:</span> <span className="font-mono text-blue-600">{order.paymentId.razorpay_payment_id}</span></p>
+                                        )}
+                                        {order.paymentMethod === 'online' && ['cancelled', 'refunded'].includes(order.status) && order.razorpayRefundId && (
+                                            <p className="text-[10px] font-bold tracking-widest text-emerald-800"><span className="uppercase">Razorpay Refund ID:</span> <span className="font-mono text-emerald-700">{order.razorpayRefundId}</span></p>
                                         )}
                                     </div>
                                 )}
@@ -224,7 +227,7 @@ function Order() {
                             const filename = item.productId?.image?.[coverIdx] || item.productId?.image?.[0];
                             const displayImg = filename ? (filename.includes('cloudinary.com') ? filename : `/${filename.split(/[\\/]/).pop()}`) : '/ErrorImage.png';
                             return (
-                            <div key={item._id} className="flex items-center gap-6 pb-4 border-b border-gray-50 last:border-0 last:pb-0">
+                        <div key={item._id} className="flex items-center gap-6 pb-4 border-b border-border last:border-0 last:pb-0">
                                 <a href={`/products/${item.productId?._id}`} target="_blank" rel="noopener noreferrer">
                                     <img
                                         src={displayImg}

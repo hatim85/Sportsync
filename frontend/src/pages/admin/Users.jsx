@@ -115,7 +115,7 @@ const Users = () => {
   return (
     <>
       <div className="w-full overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
+        <table className="min-w-full divide-y divide-border">
           <thead className="bg-secondary">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">UserId</th>
@@ -126,7 +126,7 @@ const Users = () => {
               <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Actions</th>
             </tr>
           </thead>
-          <tbody className="bg-card divide-y divide-gray-200">
+          <tbody className="bg-card divide-y divide-border">
             {Array.isArray(users) && users.map((user, key) => (
               <tr key={key}>
                 <td className="px-6 py-4 whitespace-nowrap">

@@ -196,13 +196,6 @@ function SignIn() {
                             <p className="text-[9px] text-muted-foreground tracking-wide leading-relaxed">
                                 By continuing, I agree to <Link to="/terms" className="text-foreground font-bold underline">T&C</Link> & <Link to="/privacy" className="text-foreground font-bold underline">Privacy Policy</Link>
                             </p>
-
-                            <label className="flex items-start space-x-3 cursor-pointer group">
-                                <input type="checkbox" className="mt-0.5 rounded border-border text-foreground focus:ring-0 h-3 w-3" />
-                                <span className="text-[9px] text-muted-foreground tracking-wide group-hover:text-foreground transition-colors">
-                                    Subscribe for exclusive offers from Sportsync
-                                </span>
-                            </label>
                         </div>
 
                         {/* Create Account Link */}

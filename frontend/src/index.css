@@ -223,3 +223,15 @@ input[type=number]::-webkit-outer-spin-button {
 .custom-scrollbar::-webkit-scrollbar-button:single-button:hover {
   background: #666;
 }
+
+/* Admin dashboard: ensure typed text stays readable in dark mode */
+.admin-panel input:not([type='file']),
+.admin-panel select,
+.admin-panel textarea {
+  @apply text-foreground bg-secondary border-border;
+}
+
+.admin-panel input::placeholder,
+.admin-panel textarea::placeholder {
+  @apply text-muted-foreground;
+}

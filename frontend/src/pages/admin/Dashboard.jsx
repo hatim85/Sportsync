@@ -32,7 +32,7 @@ function Dashboard() {
       </div>
       <div className="flex flex-col md:flex-row min-h-screen w-full">
         <DashSidebar />
-        <div className="flex-1 w-full overflow-hidden">
+        <div className="flex-1 w-full overflow-hidden admin-panel">
           {tab === 'products' && <Product />}
           {tab === 'product-update' && <ProductUpdate />}
           {tab === 'categories' && <Category />}

@@ -20,6 +20,13 @@ async function processRefundIfPickedUp(order) {
         return order;
     }
     order.refundNote = await processOrderRefund(order);
+    const isOnline = (order.paymentMethod || '').toLowerCase() === 'online';
+    const onlineRefundCreated = ['initiated', 'processed'].includes(order.refundStatus);
+    if (isOnline && !onlineRefundCreated) {
+        // Keep return at picked-up stage until a real Razorpay refund is created.
+        await order.save();
+        return order;
+    }
     order.refundProcessedAt = new Date();
     order.status = 'refunded';
     order.statusUpdatedAt = new Date();

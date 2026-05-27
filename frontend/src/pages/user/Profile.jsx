@@ -398,6 +398,9 @@ function Profile() {
                                 {order.paymentId?.razorpay_payment_id && (
                                   <p className="text-[10px] font-bold tracking-widest text-blue-800"><span className="uppercase">Razorpay Payment:</span> <span className="font-mono text-blue-600">{order.paymentId.razorpay_payment_id}</span></p>
                                 )}
+                                {order.paymentMethod === 'online' && ['cancelled', 'refunded'].includes(order.status) && order.razorpayRefundId && (
+                                  <p className="text-[10px] font-bold tracking-widest text-emerald-800"><span className="uppercase">Razorpay Refund ID:</span> <span className="font-mono text-emerald-700">{order.razorpayRefundId}</span></p>
+                                )}
                               </div>
                             )}
                             <p className={ui.body}>

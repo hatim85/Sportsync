@@ -4,7 +4,8 @@ import App from './App.jsx'
 import './index.css'
 import './mobile.css'
 import { Provider } from 'react-redux'
-import store from './redux/store'
+import { PersistGate } from 'redux-persist/integration/react'
+import store, { persistor } from './redux/store'
 import axios from 'axios';
 
 import { ThemeProvider } from './contexts/ThemeContext'
@@ -39,9 +40,11 @@ axios.interceptors.request.use((config) => {
 ReactDOM.createRoot(document.getElementById('root')).render(
   <>
     <Provider store={store}>
-      <ThemeProvider>
-        <App />
-      </ThemeProvider>
+      <PersistGate loading={null} persistor={persistor}>
+        <ThemeProvider>
+          <App />
+        </ThemeProvider>
+      </PersistGate>
     </Provider>
   </>
 )

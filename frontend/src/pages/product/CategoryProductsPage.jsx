@@ -8,6 +8,13 @@ import ProductCard from '../../components/ProductCard';
 import FilterSidebar from '../../components/FilterSidebar';
 import { sortByNewest, getProductTimestamp } from '../../utils/sortProducts';
 
+function applySort(list, sort) {
+    if (sort === 'newest') return sortByNewest(list);
+    if (sort === 'oldest') return [...list].sort((a, b) => getProductTimestamp(a) - getProductTimestamp(b));
+    // price_asc / price_desc are already returned sorted by server
+    return list;
+}
+
 function CategoryProductsPage() {
     const { categoryName } = useParams();
     const navigate = useNavigate();
@@ -90,8 +97,9 @@ function CategoryProductsPage() {
                 const res = await fetch(`${import.meta.env.VITE_PORT}/api/products/getProductsByCategory/all?sort=${sort}`);
                 if (!res.ok) throw new Error('Failed to fetch products');
                 const data = await res.json();
-                const fetchedProducts = sortByNewest(
-                    Array.isArray(data) ? data : (data?.products || [])
+                const fetchedProducts = applySort(
+                    Array.isArray(data) ? data : (data?.products || []),
+                    sort
                 );
                 setAllProducts(fetchedProducts);
 
@@ -146,11 +154,7 @@ function CategoryProductsPage() {
                 });
             });
         }
-        if (sort === 'newest') return sortByNewest(list);
-        if (sort === 'oldest') {
-            return [...list].sort((a, b) => getProductTimestamp(a) - getProductTimestamp(b));
-        }
-        return list;
+        return applySort(list, sort);
     }, [products, selectedPriceFilters, sort]);
 
     const otherCategoryProducts = useMemo(() => {
@@ -169,8 +173,7 @@ function CategoryProductsPage() {
                 });
             });
         }
-        
-        return sortByNewest(other).slice(0, 10);
+        return applySort(other, sort).slice(0, 10);
     }, [allProducts, selectedCategory, selectedPriceFilters]);
 
     const selectedFilters = useMemo(() => {
@@ -216,6 +219,7 @@ function CategoryProductsPage() {
                                     className="border-b border-border text-xs py-2 px-1 focus:outline-none focus:border-primary bg-transparent uppercase tracking-widest font-medium"
                                 >
                                     <option value="newest">Newest Arrivals</option>
+                                    <option value="oldest">Oldest</option>
                                     <option value="price_asc">Price: Low to High</option>
                                     <option value="price_desc">Price: High to Low</option>
                                 </select>

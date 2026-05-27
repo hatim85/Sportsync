@@ -1,6 +1,46 @@
 import Payment from '../models/paymentModel.js';
 import { instance } from '../index.js';
 
+async function resolvePaymentForRefund(order) {
+  let payment = null;
+  if (order.paymentId) {
+    payment = await Payment.findById(order.paymentId);
+  }
+  if (!payment && order.razorpay_order_id) {
+    payment = await Payment.findOne({ razorpay_order_id: order.razorpay_order_id });
+  }
+  if (!payment && order.razorpay_order_id) {
+    payment = await Payment.create({
+      amount: order.totalAmount,
+      paymentDate: new Date(),
+      paymentMethod: 'razorpay',
+      razorpay_order_id: order.razorpay_order_id,
+    });
+    order.paymentId = payment._id;
+  }
+  return payment;
+}
+
+async function ensureRazorpayPaymentId(order, payment) {
+  if (payment?.razorpay_payment_id) return payment.razorpay_payment_id;
+  if (!order.razorpay_order_id) return null;
+
+  try {
+    const paymentList = await instance.orders.fetchPayments(order.razorpay_order_id);
+    const items = paymentList?.items || [];
+    if (!items.length) return null;
+    const best = items.find((p) => p.status === 'captured') || items[0];
+    if (payment) {
+      payment.razorpay_payment_id = best.id;
+      await payment.save();
+    }
+    return best.id;
+  } catch (err) {
+    console.error('Unable to fetch Razorpay order payments:', err.message);
+    return null;
+  }
+}
+
 /**
  * Initiate Razorpay refund for online orders.
  * @param {'return'|'cancel'} type
@@ -15,19 +55,20 @@ export async function initiateRazorpayRefund(order, type = 'return') {
     };
   }
 
-  const payment = await Payment.findById(order.paymentId);
-  if (!payment?.razorpay_payment_id) {
+  const payment = await resolvePaymentForRefund(order);
+  const razorpayPaymentId = await ensureRazorpayPaymentId(order, payment);
+  if (!razorpayPaymentId) {
     return {
       note:
         type === 'cancel'
-          ? 'Order cancelled. Refund will be processed if payment was captured.'
-          : 'Refund will be processed within 5–7 business days.',
-      refundStatus: 'none',
+          ? 'Order cancelled. Refund pending: payment capture not confirmed yet.'
+          : 'Refund pending: payment capture not confirmed yet.',
+      refundStatus: 'failed',
     };
   }
 
   try {
-    const refund = await instance.payments.refund(payment.razorpay_payment_id, {
+    const refund = await instance.payments.refund(razorpayPaymentId, {
       amount: Math.round(order.totalAmount * 100),
       speed: 'normal',
     });
