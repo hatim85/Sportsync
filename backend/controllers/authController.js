@@ -162,10 +162,14 @@ export const firebaseSignin = async (req, res) => {
             { expiresIn: '15m' }
         );
 
+        const expiryDate = new Date(Date.now() + 24 * 60 * 60 * 1000); // 1 day
         res
             .status(200)
             .cookie('access_token', token, {
-                httpOnly: true
+                httpOnly: true,
+                expires: expiryDate,
+                sameSite: 'none',
+                secure: true
             })
             .json(user);
     } catch (error) {
