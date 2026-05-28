@@ -47,7 +47,7 @@ export const signup = async (req, res, next) => {
                 sameSite: 'none',
                 secure: true
             })
-            .json(rest);
+            .json({ ...rest, token });
     } catch (error) {
         next(error);
     }
@@ -87,7 +87,7 @@ export const signin = async (req, res, next) => {
                 sameSite: 'none',
                 secure: true
             })
-            .json(rest);
+            .json({ ...rest, token });
     }
     catch (error) {
         next(error);
@@ -159,10 +159,12 @@ export const firebaseSignin = async (req, res) => {
         const token = jwt.sign(
             { id: user._id, userType: user.userType },
             process.env.JWT_SECRET,
-            { expiresIn: '15m' }
+            { expiresIn: '1d' }
         );
 
         const expiryDate = new Date(Date.now() + 24 * 60 * 60 * 1000); // 1 day
+        const userObj = user.toObject ? user.toObject() : user;
+        const { password: _pw, ...userSafe } = userObj;
         res
             .status(200)
             .cookie('access_token', token, {
@@ -171,7 +173,7 @@ export const firebaseSignin = async (req, res) => {
                 sameSite: 'none',
                 secure: true
             })
-            .json(user);
+            .json({ ...userSafe, token });
     } catch (error) {
         console.error('Error during sign-in:', error);
         res.status(500).json({ success: false, message: 'Internal Server Error' });

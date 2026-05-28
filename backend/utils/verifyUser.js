@@ -3,8 +3,14 @@ import dotenv from 'dotenv'
 import { errorHandler } from './error.js'
 
 export const verifyToken = (req, res, next) => {
-    const token = req.cookies.access_token;
-    // console.log("verifyToken - token:", token ? "Token present" : "Token missing", "Cookies:", req.cookies); // DEBUG LOG
+    const authHeader = req.headers?.authorization;
+    let token = req.cookies?.access_token;
+
+    // Cross-origin production (e.g. Vercel → Render) may not send cookies; accept Bearer token too.
+    if (!token && authHeader?.startsWith('Bearer ')) {
+        token = authHeader.slice(7).trim();
+    }
+
     if (!token) {
         return next(errorHandler(401, 'Unauthorized'))
     }

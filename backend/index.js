@@ -37,12 +37,17 @@ const verifyFn = (req, res, buf) => {
 app.use(express.json({ verify: verifyFn }));
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true, verify: verifyFn }));
+const clientOrigins = (process.env.CLIENT || '')
+  .split(',')
+  .map((o) => o.trim())
+  .filter(Boolean);
+
 const allowedOrigins = [
   'https://silver-wale.vercel.app',
   'https://app.silverwale.com',
   'https://silverwale.com',
   'https://brigid-draftable-minisculely.ngrok-free.dev',
-  process.env.CLIENT // e.g. http://localhost:5173
+  ...clientOrigins,
 ].filter(Boolean);
 
 app.use(cors({
@@ -54,7 +59,8 @@ app.use(cors({
     }
   },
   credentials: true,
-  allowedHeaders: ['Content-Type', 'Authorization', 'ngrok-skip-browser-warning']
+  allowedHeaders: ['Content-Type', 'Authorization', 'ngrok-skip-browser-warning'],
+  exposedHeaders: ['Set-Cookie'],
 }));
 
 const firebaseAdminSdkBase64 =process.env.FIREBASE_ADMINSDK_BASE64;
