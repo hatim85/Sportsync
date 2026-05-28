@@ -93,9 +93,16 @@ const DELIVERED_LIKE = new Set([
   'refunded',
 ]);
 
+const HIDE_DELIVERED_DATE_STATUSES = new Set(['refunded', 'cancelled', 'failed']);
+
 /** Show "Delivery by …" only while order is still in transit */
 export function shouldShowDeliveryEstimate(status) {
   return !DELIVERED_LIKE.has(status) && status !== 'cancelled' && status !== 'failed';
+}
+
+/** Show "Delivered on …" only for delivered/return flow, excluding terminal failure/refund states. */
+export function shouldShowDeliveredDate(status) {
+  return DELIVERED_LIKE.has(status) && !HIDE_DELIVERED_DATE_STATUSES.has(status);
 }
 
 export function formatDeliveredOn(dateStr) {

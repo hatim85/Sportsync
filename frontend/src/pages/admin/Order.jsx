@@ -6,6 +6,7 @@ import {
   formatExpectedDelivery,
   canCancelOrder,
   shouldShowDeliveryEstimate,
+  shouldShowDeliveredDate,
   formatDeliveredOn,
 } from '../../utils/orderStatus.js';
 
@@ -167,7 +168,7 @@ function Order() {
                               <p className="text-xs font-semibold text-foreground pt-1">
                                 Delivery {formatExpectedDelivery(order.expectedDeliveryDate)}
                               </p>
-                            ) : formatDeliveredOn(order.deliveredAt || order.expectedDeliveryDate) ? (
+                            ) : shouldShowDeliveredDate(order.status) && formatDeliveredOn(order.deliveredAt || order.expectedDeliveryDate) ? (
                               <p className="text-xs font-semibold text-green-700 pt-1">
                                 Delivered on {formatDeliveredOn(order.deliveredAt || order.expectedDeliveryDate)}
                               </p>

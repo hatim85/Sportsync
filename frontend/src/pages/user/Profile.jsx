@@ -34,6 +34,7 @@ import {
   canCancelOrder,
   canCancelReturn,
   shouldShowDeliveryEstimate,
+  shouldShowDeliveredDate,
   formatDeliveredOn,
   getReturnPickupDateInfo,
 } from '../../utils/orderStatus.js';
@@ -411,7 +412,7 @@ function Profile() {
                               <p className={`${ui.bodyStrong} mt-2`}>
                                 Delivery by {formatCustomerDeliveryDate(order.expectedDeliveryDate)}
                               </p>
-                            ) : formatDeliveredOn(order.deliveredAt || order.expectedDeliveryDate) ? (
+                            ) : shouldShowDeliveredDate(order.status) && formatDeliveredOn(order.deliveredAt || order.expectedDeliveryDate) ? (
                               <p className={`${ui.bodyStrong} mt-2 text-green-700`}>
                                 Delivered on {formatDeliveredOn(order.deliveredAt || order.expectedDeliveryDate)}
                               </p>

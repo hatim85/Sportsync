@@ -621,3 +621,156 @@ Register in Razorpay: `https://<your-api-domain>/api/webhook`
 ---
 
 *Last updated to reflect the Sportsync codebase: sports variants (size/color), no making charge, Razorpay + COD checkout, and automated order/return lifecycle.*
+
+---
+
+## 19. CHAPTER 5: Testing
+
+### 5.1 Testing Strategy
+
+Sportsync testing uses a layered approach:
+
+1. **Unit tests** validate isolated controller and reducer behavior.
+2. **Integration tests** validate route + middleware + controller interaction.
+3. **System-level checks** validate complete user journeys through combined modules.
+4. **Security validation tests** verify access control (`verifyToken`, `verifyAdmin`) and protected-route behavior.
+
+Current automated stack:
+
+- **Backend:** Jest + Supertest (`backend`)
+- **Frontend:** Vitest (`frontend`)
+
+Run all available tests:
+
+```bash
+npm --prefix backend test
+npm --prefix frontend test
+```
+
+### 5.2 Unit Testing
+
+Implemented unit test files:
+
+- `backend/tests/authController.test.js`
+- `backend/tests/cartController.test.js`
+- `backend/tests/productController.test.js`
+- `backend/tests/categoryController.test.js`
+- `backend/tests/orderController.test.js`
+- `backend/tests/paymentController.test.js`
+- `backend/tests/securityMiddleware.test.js`
+- `backend/tests/orderRoute.integration.test.js` (route-level integration for auth/admin order endpoint)
+- `frontend/src/redux/slices/userSlice.test.js`
+- `frontend/src/redux/slices/productCategorySlice.test.js`
+- `frontend/src/redux/slices/cartSlice.test.js`
+- `frontend/src/redux/slices/orderSecurityPayment.test.js`
+
+**Figure 5.1 Unit Testing Output**
+
+Latest run summary:
+
+- Backend: **8/8 suites passed**, **16/16 tests passed**
+- Frontend: **4/4 files passed**, **11/11 tests passed**
+
+### 5.3 Integration Testing
+
+Implemented integration test file:
+
+- `backend/tests/orderRoute.integration.test.js`
+
+Coverage includes:
+
+- access to `GET /api/orders/getadminorders` without token (`401`)
+- access to `GET /api/orders/getadminorders` as non-admin (`403`)
+- successful admin endpoint access when token and role checks pass (`200`)
+
+**Figure 5.2 Integration Testing Output**
+
+Integration result is included in backend test summary with all cases passing.
+
+### 5.4 System Testing
+
+System behavior is currently validated by combining module-level and route-level tests across:
+
+- login/auth flow (signin validation and success),
+- product/category behaviors,
+- cart quantity and missing-item cases,
+- payment request validation and payment verification validation,
+- order cancellation error path,
+- security middleware checks.
+
+**Figure 5.3 System Testing Result**
+
+System-level regression status: **Pass** for the currently automated scenarios.
+
+### 5.5 Test Cases and Results
+
+#### Table 5.1 Login Module Test Cases
+
+| Test Case ID | Scenario | Expected Result | Status | Automated File |
+|---|---|---|---|---|
+| LOGIN-01 | Signin with missing email/password | Request rejected with validation error | Pass | `backend/tests/authController.test.js` |
+| LOGIN-02 | Signin with valid credentials | JWT cookie set and user payload returned | Pass | `backend/tests/authController.test.js` |
+| LOGIN-03 | User slice sign-in start state | `loading=true`, no stale error | Pass | `frontend/src/redux/slices/userSlice.test.js` |
+| LOGIN-04 | User slice sign-in success state | `currentUser` updated, `loading=false` | Pass | `frontend/src/redux/slices/userSlice.test.js` |
+
+#### Table 5.2 Product Management Test Cases
+
+| Test Case ID | Scenario | Expected Result | Status | Automated File |
+|---|---|---|---|---|
+| PROD-01 | Fetch missing product by ID | API returns `404 Product not found` | Pass | `backend/tests/productController.test.js` |
+| PROD-02 | Create category with empty name | API returns `400 Category name is required` | Pass | `backend/tests/categoryController.test.js` |
+| PROD-03 | Create category with duplicate name | API returns duplicate-name validation error | Pass | `backend/tests/categoryController.test.js` |
+
+#### Table 5.3 Shopping Cart Test Cases
+
+| Test Case ID | Scenario | Expected Result | Status | Automated File |
+|---|---|---|---|---|
+| CART-01 | Update quantity for missing cart item | API returns `404 Cart item not found` | Pass | `backend/tests/cartController.test.js` |
+| CART-02 | Update quantity for existing cart item | Quantity persisted and response returned | Pass | `backend/tests/cartController.test.js` |
+| CART-03 | Guest cart add/remove and quantity update in reducer | Cart state updates correctly for guest flows | Pass | `frontend/src/redux/slices/cartSlice.test.js` |
+
+#### Table 5.4 Razorpay Payment Test Cases
+
+| Test Case ID | Scenario | Expected Result | Status | Automated File |
+|---|---|---|---|---|
+| PAY-01 | Create payment with empty cart | API returns `400 Cart is empty` | Pass | `backend/tests/paymentController.test.js` |
+| PAY-02 | Verify payment with missing fields | API returns `400 Missing payment fields` | Pass | `backend/tests/paymentController.test.js` |
+
+#### Table 5.5 Order Management Test Cases
+
+| Test Case ID | Scenario | Expected Result | Status | Automated File |
+|---|---|---|---|---|
+| ORD-01 | Cancel order that does not exist | API returns `404 Order not found` | Pass | `backend/tests/orderController.test.js` |
+| ORD-02 | Update order status in frontend reducer | Matching order state transitions to new status | Pass | `frontend/src/redux/slices/orderSecurityPayment.test.js` |
+
+#### Table 5.6 Security Validation Test Cases
+
+| Test Case ID | Scenario | Expected Result | Status | Automated File |
+|---|---|---|---|---|
+| SEC-01 | Access protected route without token | Middleware blocks with `401 Unauthorized` | Pass | `backend/tests/securityMiddleware.test.js` |
+| SEC-02 | Access protected route with valid token | Middleware attaches `req.user` and proceeds | Pass | `backend/tests/securityMiddleware.test.js` |
+| SEC-03 | Access admin-only route as non-admin | Middleware blocks with `403` | Pass | `backend/tests/securityMiddleware.test.js` |
+
+### 5.6 Error Handling and Debugging
+
+Error handling is covered through both application middleware and tests:
+
+- Controller-level validation errors (`400`) for invalid payloads
+- Not-found scenarios (`404`) for missing domain entities
+- Authorization failures (`401`, `403`) for token/role violations
+- Integration test checks for API error payload consistency
+
+Debugging practices used:
+
+- targeted controller tests for edge cases,
+- middleware tests for auth flow correctness,
+- route-level integration tests to catch wiring regressions.
+
+**Figure 5.4 Error Handling and Validation Screens**
+
+Representative validation/error behaviors are implemented and test-verified for login, cart, payment, order, and security modules. For UI screenshots, capture:
+
+1. Sign-in validation error,
+2. Cart/item not found or quantity update failure,
+3. Payment validation error (`Missing payment fields`),
+4. Unauthorized/admin-forbidden response flow.
