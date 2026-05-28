@@ -297,6 +297,38 @@ export const sendOtp = async (req, res, next) => {
     }
 };
 
+/** Shared OTP validation for forgot-password flow */
+async function validateForgotPasswordOtp(email, otp) {
+    const otpRecord = await OtpVerification.findOne({ email }).sort({ createdAt: -1 });
+
+    if (!otpRecord || !otpRecord.pendingUserData?.isForgotPassword) {
+        return {
+            ok: false,
+            status: 400,
+            message: 'OTP has expired or does not exist. Please request a new one.',
+        };
+    }
+
+    if (otpRecord.otp !== otp) {
+        return {
+            ok: false,
+            status: 400,
+            message: 'Invalid verification code. Please check and try again.',
+        };
+    }
+
+    if (new Date() > otpRecord.expiresAt) {
+        await OtpVerification.deleteOne({ _id: otpRecord._id });
+        return {
+            ok: false,
+            status: 400,
+            message: 'OTP has expired. Please request a new one.',
+        };
+    }
+
+    return { ok: true, otpRecord };
+}
+
 export const verifyOtpAndSignup = async (req, res, next) => {
     const { email, otp } = req.body;
 
@@ -310,7 +342,7 @@ export const verifyOtpAndSignup = async (req, res, next) => {
     try {
         const otpRecord = await OtpVerification.findOne({ email }).sort({ createdAt: -1 });
 
-        if (!otpRecord) {
+        if (!otpRecord || otpRecord.pendingUserData?.isForgotPassword) {
             return res.status(400).json({
                 success: false,
                 message: "OTP has expired or does not exist. Please request a new one."
@@ -437,6 +469,35 @@ export const forgotPasswordSendOtp = async (req, res, next) => {
     }
 };
 
+export const forgotPasswordVerifyOtp = async (req, res, next) => {
+    const { email, otp } = req.body;
+
+    if (!email || !otp) {
+        return res.status(400).json({
+            success: false,
+            message: 'Email and OTP are required',
+        });
+    }
+
+    try {
+        const result = await validateForgotPasswordOtp(email, otp);
+        if (!result.ok) {
+            return res.status(result.status).json({
+                success: false,
+                message: result.message,
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: 'OTP verified successfully',
+        });
+    } catch (error) {
+        console.error('Error in forgotPasswordVerifyOtp:', error);
+        next(error);
+    }
+};
+
 export const forgotPasswordReset = async (req, res, next) => {
     const { email, otp, password } = req.body;
 
@@ -472,27 +533,11 @@ export const forgotPasswordReset = async (req, res, next) => {
             });
         }
 
-        const otpRecord = await OtpVerification.findOne({ email }).sort({ createdAt: -1 });
-
-        if (!otpRecord) {
-            return res.status(400).json({
+        const otpResult = await validateForgotPasswordOtp(email, otp);
+        if (!otpResult.ok) {
+            return res.status(otpResult.status).json({
                 success: false,
-                message: "OTP has expired or does not exist. Please request a new one."
-            });
-        }
-
-        if (otpRecord.otp !== otp) {
-            return res.status(400).json({
-                success: false,
-                message: "Invalid verification code. Please check and try again."
-            });
-        }
-
-        if (new Date() > otpRecord.expiresAt) {
-            await OtpVerification.deleteOne({ _id: otpRecord._id });
-            return res.status(400).json({
-                success: false,
-                message: "OTP has expired. Please request a new one."
+                message: otpResult.message,
             });
         }
 

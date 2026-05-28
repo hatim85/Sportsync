@@ -173,8 +173,10 @@ Point `VITE_PORT` at your API base URL (e.g. `http://localhost:5000`).
 | `RAZORPAY_API_SECRET` | Yes | Razorpay secret |
 | `WEBHOOK_SECRET` | Yes (prod) | Razorpay webhook signature secret |
 | `FIREBASE_ADMINSDK_BASE64` | Yes | Base64-encoded Firebase service account JSON |
-| `BREVO_SMTP_USER` | For OTP | SMTP user |
-| `BREVO_SMTP_KEY` | For OTP | SMTP password/key |
+| `BREVO_API_KEY` | For OTP (production) | Brevo **API key** (HTTPS — required on Render; SMTP ports are blocked) |
+| `BREVO_SENDER_EMAIL` | For OTP | Verified sender in Brevo (default `sportsync98@gmail.com`) |
+| `BREVO_SMTP_USER` | Local dev only | SMTP login (optional if using `EMAIL_TRANSPORT=smtp`) |
+| `BREVO_SMTP_KEY` | Local dev only | SMTP password |
 | `ADMIN_ALERT_EMAIL` | Optional | Email for payment/refund alert failures |
 
 See also `backend/PAYMENTS.md` for Razorpay dashboard setup.
@@ -554,7 +556,7 @@ Sidebar: `DashSidebar.jsx`.
 - OTP for signup and password reset
 - Admin alerts for payment/refund failures (`paymentAlerts.js`)
 
-Requires `BREVO_SMTP_USER`, `BREVO_SMTP_KEY`, and optionally `ADMIN_ALERT_EMAIL`.
+Requires `BREVO_API_KEY` on production (Render). Optionally `BREVO_SMTP_*` for local SMTP. Set `ADMIN_ALERT_EMAIL` for payment alerts.
 
 ---
 

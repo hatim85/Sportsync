@@ -131,15 +131,38 @@ function ForgotPassword() {
         }
     };
 
-    // Step 2: Verify OTP locally first and advance to Reset Password
-    const handleVerifyOtp = (e) => {
+    // Step 2: Verify OTP with backend before showing reset password form
+    const handleVerifyOtp = async (e) => {
         e.preventDefault();
         const otpCode = otp.join('');
         if (otpCode.length < 6) {
             toast.error('Please enter the full 6-digit OTP code');
             return;
         }
-        setStep('reset');
+
+        try {
+            setLoading(true);
+            setErrorMessage(null);
+            const res = await fetch(`${import.meta.env.VITE_PORT}/api/auth/forgot-password-verify-otp`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, otp: otpCode }),
+                credentials: 'include',
+            });
+            const data = await res.json();
+            if (data.success === false || !res.ok) {
+                toast.error(data.message || 'Invalid verification code');
+                setErrorMessage(data.message || 'Invalid verification code');
+                return;
+            }
+            toast.success('OTP verified');
+            setStep('reset');
+        } catch (error) {
+            setErrorMessage(error.message);
+            toast.error(error.message);
+        } finally {
+            setLoading(false);
+        }
     };
 
     // Step 3: Call Reset Password endpoint
@@ -174,15 +197,16 @@ function ForgotPassword() {
                 credentials: 'include'
             });
             const data = await res.json();
-            if (data.success === false) {
+            if (data.success === false || !res.ok) {
                 toast.error(data.message);
-                return setErrorMessage(data.message);
+                setErrorMessage(data.message);
+                if (data.message?.toLowerCase().includes('otp') || data.message?.toLowerCase().includes('verification')) {
+                    setStep('otp');
+                }
+                return;
             }
-            setLoading(false);
-            if (res.ok) {
-                toast.success('Password reset successfully! Please sign in.');
-                navigate('/signin');
-            }
+            toast.success('Password reset successfully! Please sign in.');
+            navigate('/signin');
         } catch (error) {
             setErrorMessage(error.message);
             toast.error(error.message);

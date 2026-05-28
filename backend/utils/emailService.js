@@ -1,36 +1,109 @@
 import nodemailer from 'nodemailer';
 
-let transporter;
+const BREVO_API_URL = 'https://api.brevo.com/v3/smtp/email';
 
-const getTransporter = () => {
-    if (!transporter) {
-        if (!process.env.BREVO_SMTP_USER || !process.env.BREVO_SMTP_KEY) {
-            throw new Error('Brevo SMTP credentials are missing from environment variables.');
-        }
-        transporter = nodemailer.createTransport({
-            host: 'smtp-relay.brevo.com',
-            port: 587,
-            secure: false,
-            auth: {
-                user: process.env.BREVO_SMTP_USER,
-                pass: process.env.BREVO_SMTP_KEY
-            }
-        });
+let smtpTransporter;
+
+function getSender() {
+  return {
+    name: process.env.BREVO_SENDER_NAME || 'Sportsync',
+    email: process.env.BREVO_SENDER_EMAIL || 'sportsync98@gmail.com',
+  };
+}
+
+/**
+ * Brevo REST API (HTTPS). Use on Render/production — outbound SMTP is often blocked.
+ */
+async function sendViaBrevoApi({ to, subject, html }) {
+  const apiKey = process.env.BREVO_API_KEY;
+  if (!apiKey) {
+    throw new Error(
+      'BREVO_API_KEY is not set. In Brevo: Settings → SMTP & API → API keys. Add it to Render env vars.',
+    );
+  }
+
+  const res = await fetch(BREVO_API_URL, {
+    method: 'POST',
+    headers: {
+      'api-key': apiKey,
+      'Content-Type': 'application/json',
+      accept: 'application/json',
+    },
+    body: JSON.stringify({
+      sender: getSender(),
+      to: [{ email: to }],
+      subject,
+      htmlContent: html,
+    }),
+  });
+
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`Brevo API failed (${res.status}): ${body}`);
+  }
+
+  const data = await res.json();
+  console.log('EMAIL SENT (Brevo API):', data?.messageId || 'ok');
+  return data;
+}
+
+/** SMTP fallback for local dev only (blocked on many hosts e.g. Render). */
+function getSmtpTransporter() {
+  if (!smtpTransporter) {
+    if (!process.env.BREVO_SMTP_USER || !process.env.BREVO_SMTP_KEY) {
+      throw new Error('Brevo SMTP credentials are missing from environment variables.');
     }
-    return transporter;
-};
+    smtpTransporter = nodemailer.createTransport({
+      host: 'smtp-relay.brevo.com',
+      port: 587,
+      secure: false,
+      connectionTimeout: 15000,
+      greetingTimeout: 15000,
+      auth: {
+        user: process.env.BREVO_SMTP_USER,
+        pass: process.env.BREVO_SMTP_KEY,
+      },
+    });
+  }
+  return smtpTransporter;
+}
+
+async function sendViaSmtp({ to, subject, html }) {
+  const sender = getSender();
+  const info = await getSmtpTransporter().sendMail({
+    from: `"${sender.name}" <${sender.email}>`,
+    to,
+    subject,
+    html,
+  });
+  console.log('EMAIL SENT (SMTP):', info.messageId);
+  return info;
+}
+
+async function sendEmail({ to, subject, html }) {
+  // Prefer HTTPS API (works on Render). SMTP only if explicitly enabled or no API key.
+  const useSmtp =
+    process.env.EMAIL_TRANSPORT === 'smtp' ||
+    (!process.env.BREVO_API_KEY && process.env.BREVO_SMTP_USER);
+
+  if (useSmtp && !process.env.BREVO_API_KEY) {
+    console.warn(
+      'Using SMTP for email. On Render this often times out — set BREVO_API_KEY and EMAIL_TRANSPORT=api.',
+    );
+    return sendViaSmtp({ to, subject, html });
+  }
+
+  return sendViaBrevoApi({ to, subject, html });
+}
 
 /**
  * Send a 6-digit OTP to the given email address.
- * @param {string} to - recipient email
- * @param {string} otp - the 6-digit OTP string
  */
 export const sendOtpEmail = async (to, otp) => {
-    const mailOptions = {
-        from: "sportsync98@gmail.com",
-        to,
-        subject: 'Verify Your Email — Sportsync',
-        html: `
+  await sendEmail({
+    to,
+    subject: 'Verify Your Email — Sportsync',
+    html: `
             <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 520px; margin: 0 auto; background: #ffffff; border: 1px solid #e5e5e5;">
                 <div style="padding: 40px 32px 24px; text-align: center; border-bottom: 1px solid #f0f0f0;">
                     <h1 style="margin: 0; font-size: 28px; letter-spacing: 8px; font-weight: 400; text-transform: uppercase; color: #000;">Sportsync</h1>
@@ -51,29 +124,24 @@ export const sendOtpEmail = async (to, otp) => {
                     </p>
                 </div>
             </div>
-        `
-    };
-
-    const info = await getTransporter().sendMail(mailOptions);
-
-    console.log("EMAIL SENT:", info);
+        `,
+  });
 };
 
 /**
  * Notify admin of payment/refund issues (non-blocking for webhooks).
  */
 export const sendAdminAlertEmail = async ({ type, orderId, message }) => {
-    const to = process.env.ADMIN_ALERT_EMAIL || process.env.BREVO_SMTP_USER;
-    if (!to) {
-        console.warn('ADMIN_ALERT_EMAIL not set; skipping alert email');
-        return;
-    }
+  const to = process.env.ADMIN_ALERT_EMAIL || process.env.BREVO_SENDER_EMAIL;
+  if (!to) {
+    console.warn('ADMIN_ALERT_EMAIL not set; skipping alert email');
+    return;
+  }
 
-    const mailOptions = {
-        from: 'sportsync98@gmail.com',
-        to,
-        subject: `[Sportsync] Payment alert: ${type}`,
-        html: `
+  await sendEmail({
+    to,
+    subject: `[Sportsync] Payment alert: ${type}`,
+    html: `
             <div style="font-family: Arial, sans-serif; max-width: 560px;">
                 <h2 style="color:#c00;">Sportsync payment alert</h2>
                 <p><strong>Type:</strong> ${type}</p>
@@ -82,7 +150,5 @@ export const sendAdminAlertEmail = async ({ type, orderId, message }) => {
                 <p style="color:#666;font-size:12px;">Check admin dashboard → Payment alerts.</p>
             </div>
         `,
-    };
-
-    await getTransporter().sendMail(mailOptions);
+  });
 };
